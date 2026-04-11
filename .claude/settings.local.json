@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv /Users/askfaisaloutlook.com/Documents/demo-projects/profile /Users/askfaisaloutlook.com/Documents/demo-projects/profile-old)",
+      "Bash(mv /Users/askfaisaloutlook.com/Documents/demo-projects/profile-new /Users/askfaisaloutlook.com/Documents/demo-projects/profile)",
+      "Bash(export PATH=\"$HOME/.local/bin:$PATH\")",
+      "Bash(gh repo:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(gh auth:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/askfaisaloutlook.com/Documents/demo-projects/profile-new/src/components"
+    ]
+  }
+}
