@@ -7,11 +7,10 @@ function ConstellationBackground() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let animationId;
-    let mouse = { x: -1000, y: -1000 };
     let dpr = window.devicePixelRatio || 1;
     let traces = [];
-    let nodes = [];
     let pulses = [];
+    let specLabels = [];
 
     const resize = () => {
       canvas.width = window.innerWidth * dpr;
@@ -19,391 +18,352 @@ function ConstellationBackground() {
       canvas.style.width = window.innerWidth + 'px';
       canvas.style.height = window.innerHeight + 'px';
       ctx.scale(dpr, dpr);
-      initGrid();
+      init();
     };
 
     const W = () => canvas.width / dpr;
     const H = () => canvas.height / dpr;
 
-    // ── Grid nodes at intersections ──
-    const initGrid = () => {
-      nodes = [];
-      traces = [];
-      const spacing = 60;
-      const cols = Math.ceil(W() / spacing) + 1;
-      const rows = Math.ceil(H() / spacing) + 1;
+    // ── Snap to precision grid ──
+    const GRID = 32;
+    const snap = (v) => Math.round(v / GRID) * GRID;
 
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          if (Math.random() > 0.35) continue; // sparse nodes
-          nodes.push({
-            x: c * spacing,
-            y: r * spacing,
-            col: c,
-            row: r,
-            radius: 1.5 + Math.random() * 1.5,
-            pulse: Math.random() * Math.PI * 2,
-            active: false,
-            activeTimer: 0,
+    const init = () => {
+      traces = [];
+      pulses = [];
+      specLabels = [];
+      const w = W(), h = H();
+      const cols = Math.floor(w / GRID);
+      const rows = Math.floor(h / GRID);
+
+      // ── Generate circuit traces ──
+      const traceCount = Math.floor((w * h) / 20000);
+      for (let i = 0; i < traceCount; i++) {
+        const sx = snap(GRID * 2 + Math.random() * (w - GRID * 4));
+        const sy = snap(GRID * 2 + Math.random() * (h - GRID * 4));
+        const path = [{ x: sx, y: sy }];
+        let cx = sx, cy = sy;
+        let dir = Math.random() > 0.45 ? 'v' : 'h'; // bias vertical
+
+        const segs = 2 + Math.floor(Math.random() * 5);
+        for (let s = 0; s < segs; s++) {
+          const steps = 2 + Math.floor(Math.random() * 7);
+          let nx, ny;
+          if (dir === 'v') {
+            nx = cx;
+            ny = snap(cy + (Math.random() > 0.5 ? 1 : -1) * steps * GRID);
+          } else {
+            nx = snap(cx + (Math.random() > 0.5 ? 1 : -1) * steps * GRID);
+            ny = cy;
+          }
+          nx = Math.max(GRID, Math.min(w - GRID, nx));
+          ny = Math.max(GRID, Math.min(h - GRID, ny));
+          if (nx !== cx || ny !== cy) {
+            path.push({ x: nx, y: ny });
+            cx = nx; cy = ny;
+          }
+          dir = dir === 'v' ? 'h' : 'v';
+        }
+
+        if (path.length >= 2) {
+          // Whether this trace has a "T" or branch stub
+          const hasStub = Math.random() > 0.6;
+          let stub = null;
+          if (hasStub && path.length >= 2) {
+            const si = 1 + Math.floor(Math.random() * (path.length - 1));
+            const sp = path[Math.min(si, path.length - 1)];
+            const stubDir = Math.random() > 0.5 ? 'h' : 'v';
+            const stubLen = (1 + Math.floor(Math.random() * 3)) * GRID;
+            stub = {
+              x1: sp.x,
+              y1: sp.y,
+              x2: stubDir === 'h' ? sp.x + (Math.random() > 0.5 ? stubLen : -stubLen) : sp.x,
+              y2: stubDir === 'v' ? sp.y + (Math.random() > 0.5 ? stubLen : -stubLen) : sp.y,
+            };
+          }
+
+          traces.push({
+            path,
+            stub,
+            progress: 0,
+            speed: 0.0015 + Math.random() * 0.003,
+            done: false,
+            opacity: 0.1 + Math.random() * 0.15,
+            lineWidth: Math.random() > 0.7 ? 1.2 : 0.8,
+            // Terminal type at endpoints
+            startTerminal: ['dot', 'square', 'none'][Math.floor(Math.random() * 3)],
+            endTerminal: ['dot', 'square', 'arrow'][Math.floor(Math.random() * 3)],
           });
         }
       }
 
-      // ── Build circuit traces between nearby nodes ──
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i], b = nodes[j];
-          const dc = Math.abs(a.col - b.col);
-          const dr = Math.abs(a.row - b.row);
-          // Only connect adjacent or L-shaped (1 col + some rows or vice versa)
-          if ((dc === 0 && dr <= 3) || (dr === 0 && dc <= 3) || (dc === 1 && dr <= 2) || (dr === 1 && dc <= 2)) {
-            if (Math.random() > 0.25) continue; // keep it sparse
-            // Build right-angle path
-            const path = buildCircuitPath(a.x, a.y, b.x, b.y);
-            traces.push({
-              path,
-              drawProgress: 0,
-              drawn: false,
-              speed: 0.003 + Math.random() * 0.004,
-              opacity: 0.06 + Math.random() * 0.06,
-              fromNode: i,
-              toNode: j,
-            });
-          }
+      // ── Spec labels (monospace text scattered on grid) ──
+      const labels = [
+        'SYS.ARCH v12.0', 'NET.CORE', 'AZURE.CLOUD', 'API.GATEWAY',
+        'SQL.ENGINE', 'CI/CD.PIPE', 'AUTH.MODULE', 'CACHE.LAYER',
+        'MICRO.SVC', 'LOAD.BAL', 'MSG.QUEUE', 'DEPLOY.NODE',
+        'ENTITY.FW', 'ANGULAR.UI', 'REST.API', 'BLOB.STORE',
+      ];
+      const labelCount = Math.floor(w / 200);
+      for (let i = 0; i < labelCount; i++) {
+        specLabels.push({
+          text: labels[Math.floor(Math.random() * labels.length)],
+          x: snap(GRID * 3 + Math.random() * (w - GRID * 6)),
+          y: snap(GRID * 3 + Math.random() * (h - GRID * 6)),
+          opacity: 0,
+          maxOpacity: 0.06 + Math.random() * 0.06,
+          delay: Math.random() * 300,
+          fadeIn: 0,
+        });
+      }
+    };
+
+    // ── Path helpers ──
+    const getPathLength = (path) => {
+      let len = 0;
+      for (let i = 0; i < path.length - 1; i++) {
+        len += Math.abs(path[i + 1].x - path[i].x) + Math.abs(path[i + 1].y - path[i].y);
+      }
+      return len;
+    };
+
+    const getPosAt = (path, progress) => {
+      const total = getPathLength(path);
+      const target = total * progress;
+      let walked = 0;
+      for (let i = 0; i < path.length - 1; i++) {
+        const dx = path[i + 1].x - path[i].x;
+        const dy = path[i + 1].y - path[i].y;
+        const segLen = Math.abs(dx) + Math.abs(dy);
+        if (walked + segLen >= target) {
+          const t = (target - walked) / segLen;
+          return { x: path[i].x + dx * t, y: path[i].y + dy * t };
         }
+        walked += segLen;
+      }
+      return { x: path[path.length - 1].x, y: path[path.length - 1].y };
+    };
+
+    const drawTerminal = (x, y, type, opacity) => {
+      const o = Math.min(opacity * 3, 1);
+      if (type === 'dot') {
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(80, 160, 240, ${o * 0.8})`;
+        ctx.fill();
+        // glow ring
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(80, 160, 240, ${o * 0.2})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      } else if (type === 'square') {
+        const s = 3;
+        ctx.fillStyle = `rgba(80, 160, 240, ${o * 0.7})`;
+        ctx.fillRect(x - s, y - s, s * 2, s * 2);
+        ctx.strokeStyle = `rgba(80, 160, 240, ${o * 0.25})`;
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x - s - 2, y - s - 2, (s + 2) * 2, (s + 2) * 2);
       }
     };
 
-    // Build L-shaped or straight circuit path between two points
-    const buildCircuitPath = (x1, y1, x2, y2) => {
-      const points = [{ x: x1, y: y1 }];
-      if (Math.random() > 0.5) {
-        // Go horizontal first, then vertical
-        points.push({ x: x2, y: y1 });
-        points.push({ x: x2, y: y2 });
-      } else {
-        // Go vertical first, then horizontal
-        points.push({ x: x1, y: y2 });
-        points.push({ x: x2, y: y2 });
-      }
-      return points;
-    };
-
-    // Create a signal pulse along a trace
-    const createPulse = () => {
-      const eligibleTraces = traces.filter(t => t.drawn);
-      if (eligibleTraces.length === 0) return;
-      const trace = eligibleTraces[Math.floor(Math.random() * eligibleTraces.length)];
-      const reverse = Math.random() > 0.5;
-      pulses.push({
-        trace,
-        progress: 0,
-        speed: 0.01 + Math.random() * 0.015,
-        reverse,
-        color: Math.random() > 0.5 ? [99, 102, 241] : [34, 211, 238],
-        size: 2 + Math.random() * 2,
-      });
-      // Activate endpoint nodes
-      nodes[trace.fromNode].active = true;
-      nodes[trace.fromNode].activeTimer = 50;
-      nodes[trace.toNode].active = true;
-      nodes[trace.toNode].activeTimer = 50;
-    };
-
-    const handleMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
-    window.addEventListener("mousemove", handleMouseMove);
     resize();
     window.addEventListener("resize", resize);
 
     let time = 0;
-    let pulseTimer = 0;
+    let frame = 0;
 
     const animate = () => {
       ctx.clearRect(0, 0, W(), H());
-      time += 0.005;
-      pulseTimer++;
+      time += 0.004;
+      frame++;
 
-      // ── Draw engineering grid ──
-      const spacing = 60;
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.025)';
+      const w = W(), h = H();
+
+      // ══════ PRECISION GRID ══════
+      // Major grid
+      ctx.strokeStyle = 'rgba(60, 100, 160, 0.04)';
       ctx.lineWidth = 0.5;
-      for (let x = 0; x < W(); x += spacing) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, H());
-        ctx.stroke();
+      for (let x = 0; x <= w; x += GRID) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
       }
-      for (let y = 0; y < H(); y += spacing) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(W(), y);
-        ctx.stroke();
+      for (let y = 0; y <= h; y += GRID) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
-
-      // ── Minor grid (finer) ──
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.012)';
-      const minorSpacing = 15;
-      for (let x = 0; x < W(); x += minorSpacing) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, H());
-        ctx.stroke();
-      }
-      for (let y = 0; y < H(); y += minorSpacing) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(W(), y);
-        ctx.stroke();
+      // Minor grid crosshairs at intersections
+      for (let x = 0; x <= w; x += GRID) {
+        for (let y = 0; y <= h; y += GRID) {
+          ctx.fillStyle = 'rgba(60, 110, 180, 0.04)';
+          ctx.fillRect(x - 0.5, y - 0.5, 1, 1);
+        }
       }
 
-      // ── Draw corner targeting brackets ──
-      const bracketSize = 40;
-      const bracketInset = 30;
-      const bracketOpacity = 0.15 + Math.sin(time * 2) * 0.05;
-      ctx.strokeStyle = `rgba(99, 102, 241, ${bracketOpacity})`;
+      // ══════ CORNER TARGETING BRACKETS ══════
+      const bs = 50, bi = 16;
+      const bo = 0.2 + Math.sin(time * 1.5) * 0.06;
       ctx.lineWidth = 1.5;
+      ctx.strokeStyle = `rgba(60, 130, 220, ${bo})`;
+      // TL
+      ctx.beginPath(); ctx.moveTo(bi, bi + bs); ctx.lineTo(bi, bi); ctx.lineTo(bi + bs, bi); ctx.stroke();
+      // TR
+      ctx.beginPath(); ctx.moveTo(w-bi-bs, bi); ctx.lineTo(w-bi, bi); ctx.lineTo(w-bi, bi+bs); ctx.stroke();
+      // BL
+      ctx.beginPath(); ctx.moveTo(bi, h-bi-bs); ctx.lineTo(bi, h-bi); ctx.lineTo(bi+bs, h-bi); ctx.stroke();
+      // BR
+      ctx.beginPath(); ctx.moveTo(w-bi-bs, h-bi); ctx.lineTo(w-bi, h-bi); ctx.lineTo(w-bi, h-bi-bs); ctx.stroke();
 
-      // Top-left
-      ctx.beginPath();
-      ctx.moveTo(bracketInset, bracketInset + bracketSize);
-      ctx.lineTo(bracketInset, bracketInset);
-      ctx.lineTo(bracketInset + bracketSize, bracketInset);
-      ctx.stroke();
+      // Small tick marks along bracket edges
+      ctx.strokeStyle = `rgba(60, 130, 220, ${bo * 0.4})`;
+      ctx.lineWidth = 0.8;
+      for (let t = 0; t < 4; t++) {
+        const tx = bi + bs + 12 + t * 10;
+        ctx.beginPath(); ctx.moveTo(tx, bi); ctx.lineTo(tx, bi + 5); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(bi, bi + bs + 12 + t * 10); ctx.lineTo(bi + 5, bi + bs + 12 + t * 10); ctx.stroke();
+      }
 
-      // Top-right
-      ctx.beginPath();
-      ctx.moveTo(W() - bracketInset - bracketSize, bracketInset);
-      ctx.lineTo(W() - bracketInset, bracketInset);
-      ctx.lineTo(W() - bracketInset, bracketInset + bracketSize);
-      ctx.stroke();
-
-      // Bottom-left
-      ctx.beginPath();
-      ctx.moveTo(bracketInset, H() - bracketInset - bracketSize);
-      ctx.lineTo(bracketInset, H() - bracketInset);
-      ctx.lineTo(bracketInset + bracketSize, H() - bracketInset);
-      ctx.stroke();
-
-      // Bottom-right
-      ctx.beginPath();
-      ctx.moveTo(W() - bracketInset - bracketSize, H() - bracketInset);
-      ctx.lineTo(W() - bracketInset, H() - bracketInset);
-      ctx.lineTo(W() - bracketInset, H() - bracketInset - bracketSize);
-      ctx.stroke();
-
-      // ── Animated circuit traces (draw themselves) ──
+      // ══════ CIRCUIT TRACES (self-drawing) ══════
       traces.forEach((trace) => {
-        if (!trace.drawn) {
-          trace.drawProgress += trace.speed;
-          if (trace.drawProgress >= 1) {
-            trace.drawProgress = 1;
-            trace.drawn = true;
+        if (!trace.done) {
+          trace.progress += trace.speed;
+          if (trace.progress >= 1) {
+            trace.progress = 1;
+            trace.done = true;
           }
         }
 
         const path = trace.path;
-        const progress = trace.drawProgress;
+        const totalLen = getPathLength(path);
+        const drawLen = totalLen * trace.progress;
+        let walked = 0;
 
-        // Calculate total path length
-        let totalLen = 0;
-        const segLens = [];
+        // Draw path
+        ctx.strokeStyle = `rgba(50, 130, 210, ${trace.opacity})`;
+        ctx.lineWidth = trace.lineWidth;
+
         for (let i = 0; i < path.length - 1; i++) {
           const dx = path[i + 1].x - path[i].x;
           const dy = path[i + 1].y - path[i].y;
-          const len = Math.sqrt(dx * dx + dy * dy);
-          segLens.push(len);
-          totalLen += len;
+          const segLen = Math.abs(dx) + Math.abs(dy);
+
+          if (walked >= drawLen) break;
+
+          ctx.beginPath();
+          ctx.moveTo(path[i].x, path[i].y);
+
+          if (walked + segLen <= drawLen) {
+            ctx.lineTo(path[i + 1].x, path[i + 1].y);
+          } else {
+            const t = (drawLen - walked) / segLen;
+            ctx.lineTo(path[i].x + dx * t, path[i].y + dy * t);
+          }
+          ctx.stroke();
+          walked += segLen;
         }
 
-        const drawLen = totalLen * progress;
-        let drawn = 0;
+        // Draw stub/branch
+        if (trace.stub && trace.done) {
+          ctx.beginPath();
+          ctx.moveTo(trace.stub.x1, trace.stub.y1);
+          ctx.lineTo(trace.stub.x2, trace.stub.y2);
+          ctx.strokeStyle = `rgba(50, 130, 210, ${trace.opacity * 0.6})`;
+          ctx.lineWidth = trace.lineWidth * 0.7;
+          ctx.stroke();
+          drawTerminal(trace.stub.x2, trace.stub.y2, 'dot', trace.opacity * 0.5);
+        }
 
-        ctx.beginPath();
-        ctx.moveTo(path[0].x, path[0].y);
-
-        for (let i = 0; i < segLens.length; i++) {
-          if (drawn + segLens[i] <= drawLen) {
-            ctx.lineTo(path[i + 1].x, path[i + 1].y);
-            drawn += segLens[i];
-          } else {
-            const remaining = drawLen - drawn;
-            const t = remaining / segLens[i];
-            const x = path[i].x + (path[i + 1].x - path[i].x) * t;
-            const y = path[i].y + (path[i + 1].y - path[i].y) * t;
-            ctx.lineTo(x, y);
-            break;
+        // Draw corner dots
+        const visiblePts = Math.ceil(path.length * trace.progress);
+        for (let i = 0; i < visiblePts && i < path.length; i++) {
+          const p = path[i];
+          // Corner junction dots
+          if (i > 0 && i < path.length - 1) {
+            ctx.fillStyle = `rgba(80, 170, 255, ${trace.opacity * 1.8})`;
+            ctx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3);
           }
         }
 
-        // Mouse proximity boost
-        const midX = (path[0].x + path[path.length - 1].x) / 2;
-        const midY = (path[0].y + path[path.length - 1].y) / 2;
-        const mouseDist = Math.sqrt((mouse.x - midX) ** 2 + (mouse.y - midY) ** 2);
-        const mouseBoost = mouseDist < 200 ? 0.08 * (1 - mouseDist / 200) : 0;
+        // Terminals
+        if (trace.progress > 0.05) {
+          drawTerminal(path[0].x, path[0].y, trace.startTerminal, trace.opacity);
+        }
+        if (trace.done) {
+          drawTerminal(path[path.length - 1].x, path[path.length - 1].y, trace.endTerminal, trace.opacity);
+        }
 
-        ctx.strokeStyle = `rgba(99, 102, 241, ${trace.opacity + mouseBoost})`;
-        ctx.lineWidth = mouseBoost > 0 ? 1 : 0.8;
-        ctx.stroke();
-
-        // Draw small squares at corners of the path
-        if (trace.drawn) {
-          path.forEach((p, idx) => {
-            if (idx === 0 || idx === path.length - 1) return;
-            const s = 2;
-            ctx.fillStyle = `rgba(99, 102, 241, ${trace.opacity * 1.5})`;
-            ctx.fillRect(p.x - s, p.y - s, s * 2, s * 2);
-          });
+        // Drawing head glow (while animating)
+        if (!trace.done) {
+          const headPos = getPosAt(path, trace.progress);
+          const glow = ctx.createRadialGradient(headPos.x, headPos.y, 0, headPos.x, headPos.y, 12);
+          glow.addColorStop(0, 'rgba(100, 200, 255, 0.4)');
+          glow.addColorStop(1, 'rgba(100, 200, 255, 0)');
+          ctx.fillStyle = glow;
+          ctx.fillRect(headPos.x - 12, headPos.y - 12, 24, 24);
         }
       });
 
-      // ── Spawn signal pulses ──
-      if (pulseTimer % 40 === 0) {
-        createPulse();
+      // ══════ SIGNAL PULSES ══════
+      if (frame % 60 === 0 && traces.filter(t => t.done).length > 0) {
+        const eligible = traces.filter(t => t.done);
+        const trace = eligible[Math.floor(Math.random() * eligible.length)];
+        pulses.push({
+          path: trace.path,
+          progress: 0,
+          speed: 0.004 + Math.random() * 0.008,
+          reverse: Math.random() > 0.5,
+        });
       }
 
-      // ── Draw signal pulses ──
       pulses = pulses.filter((pulse) => {
         pulse.progress += pulse.speed;
         if (pulse.progress >= 1) return false;
 
-        const path = pulse.trace.path;
         const p = pulse.reverse ? 1 - pulse.progress : pulse.progress;
+        const pos = getPosAt(pulse.path, p);
 
-        // Find position along path
-        let totalLen = 0;
-        const segLens = [];
-        for (let i = 0; i < path.length - 1; i++) {
-          const dx = path[i + 1].x - path[i].x;
-          const dy = path[i + 1].y - path[i].y;
-          segLens.push(Math.sqrt(dx * dx + dy * dy));
-          totalLen += segLens[i];
-        }
-
-        const targetLen = totalLen * p;
-        let walked = 0;
-        let px = path[0].x, py = path[0].y;
-
-        for (let i = 0; i < segLens.length; i++) {
-          if (walked + segLens[i] >= targetLen) {
-            const t = (targetLen - walked) / segLens[i];
-            px = path[i].x + (path[i + 1].x - path[i].x) * t;
-            py = path[i].y + (path[i + 1].y - path[i].y) * t;
-            break;
-          }
-          walked += segLens[i];
-        }
-
-        // Glow
-        const c = pulse.color;
-        const glow = ctx.createRadialGradient(px, py, 0, px, py, pulse.size * 6);
-        glow.addColorStop(0, `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.35)`);
-        glow.addColorStop(0.4, `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.1)`);
-        glow.addColorStop(1, `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0)`);
+        // Glow trail
+        const glow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 18);
+        glow.addColorStop(0, 'rgba(100, 200, 255, 0.6)');
+        glow.addColorStop(0.3, 'rgba(60, 150, 240, 0.15)');
+        glow.addColorStop(1, 'rgba(40, 120, 220, 0)');
         ctx.fillStyle = glow;
-        ctx.fillRect(px - pulse.size * 6, py - pulse.size * 6, pulse.size * 12, pulse.size * 12);
+        ctx.fillRect(pos.x - 18, pos.y - 18, 36, 36);
 
-        // Bright center
+        // Core
         ctx.beginPath();
-        ctx.arc(px, py, pulse.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.8)`;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(px, py, pulse.size * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(200, 235, 255, 0.95)';
         ctx.fill();
 
         return true;
       });
 
-      // ── Draw nodes ──
-      nodes.forEach((node) => {
-        node.pulse += 0.015;
-        if (node.activeTimer > 0) node.activeTimer--;
-        if (node.activeTimer === 0) node.active = false;
-
-        // Mouse proximity
-        const dx = mouse.x - node.x;
-        const dy = mouse.y - node.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 150) {
-          node.active = true;
-          node.activeTimer = Math.max(node.activeTimer, 15);
+      // ══════ SPEC LABELS (monospace) ══════
+      ctx.font = "9px 'SF Mono', 'Fira Code', 'Courier New', monospace";
+      specLabels.forEach((label) => {
+        if (frame > label.delay) {
+          label.fadeIn = Math.min(label.fadeIn + 0.005, 1);
+          label.opacity = label.maxOpacity * label.fadeIn;
         }
+        if (label.opacity > 0.01) {
+          ctx.fillStyle = `rgba(80, 140, 200, ${label.opacity})`;
+          ctx.fillText(label.text, label.x, label.y);
 
-        const isActive = node.active;
-        const r = node.radius + Math.sin(node.pulse) * 0.5;
-
-        if (isActive) {
-          // Active glow
-          const glow = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, r * 10);
-          glow.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
-          glow.addColorStop(1, 'rgba(99, 102, 241, 0)');
-          ctx.fillStyle = glow;
-          ctx.fillRect(node.x - r * 10, node.y - r * 10, r * 20, r * 20);
-
-          // Active ring
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, r * 3, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
+          // Small line connecting label to grid
+          ctx.strokeStyle = `rgba(80, 140, 200, ${label.opacity * 0.5})`;
           ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(label.x - 2, label.y - 4);
+          ctx.lineTo(label.x - 8, label.y - 4);
+          ctx.lineTo(label.x - 8, label.y - 10);
           ctx.stroke();
         }
-
-        // Node diamond shape
-        const s = r * 1.2;
-        ctx.beginPath();
-        ctx.moveTo(node.x, node.y - s);
-        ctx.lineTo(node.x + s, node.y);
-        ctx.lineTo(node.x, node.y + s);
-        ctx.lineTo(node.x - s, node.y);
-        ctx.closePath();
-        ctx.fillStyle = isActive
-          ? 'rgba(129, 140, 248, 0.7)'
-          : `rgba(99, 102, 241, ${0.15 + Math.sin(node.pulse) * 0.08})`;
-        ctx.fill();
-
-        // Inner dot
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, r * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = isActive ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.2)';
-        ctx.fill();
       });
 
-      // ── Mouse crosshair ──
-      if (mouse.x > 0 && mouse.y > 0) {
-        const crossSize = 20;
-        ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
-        ctx.lineWidth = 0.8;
-
-        // Horizontal
-        ctx.beginPath();
-        ctx.moveTo(mouse.x - crossSize, mouse.y);
-        ctx.lineTo(mouse.x - 6, mouse.y);
-        ctx.moveTo(mouse.x + 6, mouse.y);
-        ctx.lineTo(mouse.x + crossSize, mouse.y);
-        ctx.stroke();
-
-        // Vertical
-        ctx.beginPath();
-        ctx.moveTo(mouse.x, mouse.y - crossSize);
-        ctx.lineTo(mouse.x, mouse.y - 6);
-        ctx.moveTo(mouse.x, mouse.y + 6);
-        ctx.lineTo(mouse.x, mouse.y + crossSize);
-        ctx.stroke();
-
-        // Mouse glow
-        const mg = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 120);
-        mg.addColorStop(0, 'rgba(99, 102, 241, 0.06)');
-        mg.addColorStop(1, 'rgba(99, 102, 241, 0)');
-        ctx.fillStyle = mg;
-        ctx.beginPath();
-        ctx.arc(mouse.x, mouse.y, 120, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      // ══════ COORDINATE READOUT (bottom-right) ══════
+      const readout = `[${Math.floor(w)}x${Math.floor(h)}] GRID:${GRID}px`;
+      ctx.font = "9px 'SF Mono', 'Fira Code', 'Courier New', monospace";
+      ctx.fillStyle = `rgba(60, 120, 180, 0.1)`;
+      ctx.fillText(readout, w - 180, h - 20);
 
       animationId = requestAnimationFrame(animate);
     };
@@ -413,7 +373,6 @@ function ConstellationBackground() {
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
