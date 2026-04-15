@@ -1,5 +1,37 @@
 import { FadeIn } from '../hooks/useFadeIn';
+import useTilt from '../hooks/useTilt';
 import { experience } from '../data/profile';
+
+function ExperienceCard({ item }) {
+  const ref = useTilt();
+  return (
+    <div ref={ref} className="timeline-item">
+      <div className="timeline-dot"></div>
+      <div className="timeline-content">
+        <div className="timeline-header">
+          <div>
+            <h3 className="timeline-role">{item.role}</h3>
+            <p className="timeline-company">{item.company}</p>
+          </div>
+          <span className="timeline-period">{item.period}</span>
+        </div>
+        {item.description && (
+          <p className="timeline-description">{item.description}</p>
+        )}
+        <div className="timeline-tags">
+          {item.tech.map((t) => (
+            <span key={t} className="tag">{t}</span>
+          ))}
+        </div>
+        <ul className="timeline-highlights">
+          {item.highlights.map((h, j) => (
+            <li key={j}>{h}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
 
 function Experience() {
   return (
@@ -13,31 +45,7 @@ function Experience() {
         <div className="timeline">
           {experience.map((exp, i) => (
             <FadeIn key={i} delay={i * 80}>
-              <div className="timeline-item">
-                <div className="timeline-dot"></div>
-                <div className="timeline-content">
-                  <div className="timeline-header">
-                    <div>
-                      <h3 className="timeline-role">{exp.role}</h3>
-                      <p className="timeline-company">{exp.company}</p>
-                    </div>
-                    <span className="timeline-period">{exp.period}</span>
-                  </div>
-                  {exp.description && (
-                    <p className="timeline-description">{exp.description}</p>
-                  )}
-                  <div className="timeline-tags">
-                    {exp.tech.map((t) => (
-                      <span key={t} className="tag">{t}</span>
-                    ))}
-                  </div>
-                  <ul className="timeline-highlights">
-                    {exp.highlights.map((h, j) => (
-                      <li key={j}>{h}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              <ExperienceCard item={exp} />
             </FadeIn>
           ))}
         </div>
