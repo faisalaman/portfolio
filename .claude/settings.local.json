@@ -22,7 +22,8 @@
       "Bash(kill be787kumf *)",
       "Bash(pkill -f \"vite\")",
       "Bash(npm install *)",
-      "Bash(git merge *)"
+      "Bash(git merge *)",
+      "Bash(git branch *)"
     ],
     "additionalDirectories": [
       "/Users/askfaisaloutlook.com/Documents/demo-projects/profile-new/src/components"

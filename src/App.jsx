@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { AuroraBackground } from './components/ui/AuroraBackground';
 import { ScrollProgress } from './components/ui/ScrollProgress';
 import { Navbar } from './components/layout/Navbar';
@@ -36,6 +38,8 @@ export default function App() {
       <Footer />
       <ScrollToTop />
       <AIChatAssistant />
+      <Analytics />
+      <SpeedInsights />
     </>
   );
 }
