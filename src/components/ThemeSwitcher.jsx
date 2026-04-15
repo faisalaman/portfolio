@@ -8,6 +8,7 @@ const themes = [
   { id: "emerald", name: "Emerald", color: "#10b981" },
   { id: "rose", name: "Rose", color: "#ec4899" },
   { id: "light", name: "Light", color: "#f8fafc" },
+  { id: "aurora", name: "Aurora", color: "linear-gradient(135deg, #a78bfa, #22d3ee, #f472b6)" },
 ];
 
 function ThemeSwitcher() {
