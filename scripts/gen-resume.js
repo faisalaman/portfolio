@@ -15,7 +15,7 @@ import {
   techExpertise,
 } from '../src/data/profile.js';
 
-const OUT = 'public/Faisal-Aman-AI-Developer-Resume.pdf';
+const OUT = 'public/Faisal_Aman_CV_UAE.pdf';
 
 // ---- palette (paper-friendly) ----
 const C = {

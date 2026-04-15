@@ -30,7 +30,7 @@ export function Contact() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button as="a" href={`mailto:${profile.email}`}>{profile.email}</Button>
             <Button as="a" href={profile.linkedin} target="_blank" rel="noreferrer" variant="ghost">LinkedIn</Button>
-            <Button as="a" href="/Faisal-Aman-AI-Developer-Resume.pdf" download variant="ghost">Download Resume</Button>
+            <Button as="a" href="/Faisal_Aman_CV_UAE.pdf" download variant="ghost">Download Resume</Button>
           </div>
           <p className="mt-6 text-sm text-text-muted">{profile.phone} · {profile.location}</p>
         </div>

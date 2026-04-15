@@ -122,7 +122,7 @@ export function Hero() {
               <Button as="a" href="#contact" variant="ghost">Contact Me</Button>
               <Button
                 as="a"
-                href="/Faisal-Aman-AI-Developer-Resume.pdf"
+                href="/Faisal_Aman_CV_UAE.pdf"
                 download
                 variant="ghost"
               >
