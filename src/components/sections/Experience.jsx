@@ -1,25 +1,36 @@
-import { motion as Motion } from 'framer-motion';
+import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Section } from '../ui/Section';
 import { Card } from '../ui/Card';
-import { fadeUp, stagger, viewportOnce } from '../../lib/motion';
+import { slideInLeft, stagger, viewportOnce } from '../../lib/motion';
 import { experience } from '../../data/profile';
 
 export function Experience() {
+  const reduce = useReducedMotion();
   return (
     <Section id="experience">
       <div className="mb-12 text-center">
         <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Experience</h2>
         <p className="mx-auto mt-4 max-w-2xl text-text-muted">12+ years across enterprise and government engagements.</p>
       </div>
-      <Motion.div
-        variants={stagger(0.1)}
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportOnce}
-        className="space-y-6"
-      >
-        {experience.map((job) => (
-          <Motion.div key={`${job.role}-${job.company}`} variants={fadeUp}>
+      <div className="relative">
+        <Motion.span
+          aria-hidden
+          initial={reduce ? false : { scaleY: 0 }}
+          whileInView={reduce ? undefined : { scaleY: 1 }}
+          viewport={viewportOnce}
+          transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+          style={{ originY: 0 }}
+          className="pointer-events-none absolute left-2 top-2 bottom-2 hidden w-px bg-gradient-to-b from-primary via-accent to-transparent md:block"
+        />
+        <Motion.div
+          variants={stagger(0.1)}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          className="space-y-6 md:pl-10"
+        >
+          {experience.map((job) => (
+            <Motion.div key={`${job.role}-${job.company}`} variants={slideInLeft}>
             <Card tilt>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -49,7 +60,8 @@ export function Experience() {
             </Card>
           </Motion.div>
         ))}
-      </Motion.div>
+        </Motion.div>
+      </div>
     </Section>
   );
 }

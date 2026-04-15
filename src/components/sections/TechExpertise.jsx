@@ -1,7 +1,7 @@
 import { motion as Motion } from 'framer-motion';
 import { Section } from '../ui/Section';
 import { Card } from '../ui/Card';
-import { fadeUp, stagger, viewportOnce } from '../../lib/motion';
+import { rotateIn, stagger, viewportOnce } from '../../lib/motion';
 import { techExpertise } from '../../data/profile';
 
 export function TechExpertise() {
@@ -20,7 +20,7 @@ export function TechExpertise() {
         className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
         {entries.map(([category, list]) => (
-          <Motion.div key={category} variants={fadeUp}>
+          <Motion.div key={category} variants={rotateIn}>
             <Card className="h-full">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-primary">{category}</h3>
               <p className="mt-3 text-sm leading-relaxed text-text">{list}</p>

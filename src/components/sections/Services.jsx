@@ -1,7 +1,7 @@
 import { motion as Motion } from 'framer-motion';
 import { Section } from '../ui/Section';
 import { Card } from '../ui/Card';
-import { fadeUp, stagger, viewportOnce } from '../../lib/motion';
+import { popIn, stagger, viewportOnce } from '../../lib/motion';
 import { services } from '../../data/profile';
 
 const ICONS = {
@@ -28,7 +28,7 @@ export function Services() {
         className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
       >
         {services.map((s) => (
-          <Motion.div key={s.title} variants={fadeUp}>
+          <Motion.div key={s.title} variants={popIn}>
             <Card tilt className="h-full">
               <div className="grid h-12 w-12 place-items-center rounded-xl bg-primary/10 text-primary">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

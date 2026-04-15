@@ -1,7 +1,8 @@
-import { useInView } from 'framer-motion';
+import { motion as Motion, useInView, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
 import { Section } from '../ui/Section';
 import { useCounter } from '../../hooks/useCounter';
+import { slideInLeft, slideInRight, viewportOnce } from '../../lib/motion';
 import { profile, stats } from '../../data/profile';
 
 function Stat({ stat, start }) {
@@ -19,11 +20,17 @@ function Stat({ stat, start }) {
 export function About() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.3 });
+  const reduce = useReducedMotion();
 
   return (
     <Section id="about">
       <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-        <div>
+        <Motion.div
+          variants={reduce ? undefined : slideInLeft}
+          initial={reduce ? false : 'hidden'}
+          whileInView={reduce ? undefined : 'visible'}
+          viewport={viewportOnce}
+        >
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">About me</h2>
           <p className="mt-6 text-base leading-relaxed text-text-muted md:text-lg">{profile.summary}</p>
           <dl className="mt-8 grid grid-cols-2 gap-4 text-sm">
@@ -32,12 +39,19 @@ export function About() {
             <div><dt className="text-text-muted">Languages</dt><dd className="font-medium">{profile.languages}</dd></div>
             <div><dt className="text-text-muted">Education</dt><dd className="font-medium">{profile.education.degree}</dd></div>
           </dl>
-        </div>
-        <div ref={ref} className="grid grid-cols-2 gap-6 rounded-2xl glass p-8">
+        </Motion.div>
+        <Motion.div
+          ref={ref}
+          variants={reduce ? undefined : slideInRight}
+          initial={reduce ? false : 'hidden'}
+          whileInView={reduce ? undefined : 'visible'}
+          viewport={viewportOnce}
+          className="grid grid-cols-2 gap-6 rounded-2xl glass p-8"
+        >
           {stats.map((s) => (
             <Stat key={s.label} stat={s} start={inView} />
           ))}
-        </div>
+        </Motion.div>
       </div>
     </Section>
   );
