@@ -1404,3 +1404,18 @@ img { max-width: 100%; display: block; }
 @media (prefers-reduced-motion: reduce) {
   .gradient-text { animation: none; }
 }
+
+/* ===== Scroll Reveal (global) ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
