@@ -23,7 +23,8 @@
       "Bash(pkill -f \"vite\")",
       "Bash(npm install *)",
       "Bash(git merge *)",
-      "Bash(git branch *)"
+      "Bash(git branch *)",
+      "Bash(node scripts/gen-og.js)"
     ],
     "additionalDirectories": [
       "/Users/askfaisaloutlook.com/Documents/demo-projects/profile-new/src/components"
