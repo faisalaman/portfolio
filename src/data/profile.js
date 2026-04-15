@@ -15,6 +15,7 @@ export const profile = {
   email: "askfaisal@outlook.com",
   location: "United Arab Emirates",
   linkedin: "https://linkedin.com/in/faisal-aman-b2412620",
+  github: "https://github.com/faisalaman",
   nationality: "Pakistani",
   visaStatus: "Employment Visa",
   languages: "English, Urdu",

@@ -1,12 +1,10 @@
 import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { GradientText } from '../ui/GradientText';
-import { TypingTitle } from '../ui/TypingTitle';
 import { Marquee } from '../ui/Marquee';
 import { AIOrb } from '../ui/AIOrb';
 import { profile } from '../../data/profile';
 
-// A small curated list — "the headline stack", not everything
 const slimMarquee = [
   '⚡ AI / LLM',
   '◇ .NET Core',
@@ -18,18 +16,33 @@ const slimMarquee = [
   '◢ TypeScript',
 ];
 
+const subtextChips = [
+  'LLM Integration',
+  'Secure APIs',
+  'UAE Pass / eSeal',
+  'Scalable Backend',
+];
+
 const bounce = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1, y: 0,
-    transition: { type: 'spring', stiffness: 260, damping: 16, mass: 0.8 },
+    transition: { type: 'spring', stiffness: 260, damping: 18, mass: 0.8 },
   },
 };
 
-const stagger = (delay = 0.05) => ({
+const stagger = (delay = 0.1) => ({
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1, delayChildren: delay } },
+  visible: { transition: { staggerChildren: 0.12, delayChildren: delay } },
 });
+
+function GithubIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.8 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.8.1 3.1.8.8 1.2 1.9 1.2 3.2 0 4.5-2.8 5.5-5.4 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0 0 12 .5z"/>
+    </svg>
+  );
+}
 
 export function Hero() {
   const reduce = useReducedMotion();
@@ -39,22 +52,7 @@ export function Hero() {
         {/* Dotted grid backdrop */}
         <div aria-hidden className="grid-dots pointer-events-none absolute inset-0 -z-10" />
 
-        {/* Soft glow */}
-        <Motion.div
-          aria-hidden
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-          className="pointer-events-none absolute right-0 top-1/3 -z-0 h-[60vh] w-[60vh]"
-        >
-          <Motion.div
-            animate={reduce ? undefined : { scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
-            transition={reduce ? undefined : { duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-            className="h-full w-full rounded-full bg-[radial-gradient(circle_at_center,var(--color-primary)_0%,transparent_60%)] opacity-25 dark:opacity-50 blur-3xl"
-          />
-        </Motion.div>
-
-        {/* Ambient AI orb — fills the hero as background */}
+        {/* Ambient AI orb filling the hero */}
         <Motion.div
           aria-hidden
           initial={reduce ? false : { opacity: 0, scale: 0.7 }}
@@ -62,55 +60,89 @@ export function Hero() {
           transition={reduce ? undefined : { type: 'spring', stiffness: 80, damping: 18, mass: 1.2, delay: 0.2 }}
           className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
         >
-          <div className="w-[min(150vh,150vw)] opacity-30 dark:opacity-50 mix-blend-screen">
+          <div className="w-[min(140vh,140vw)] opacity-25 dark:opacity-45 mix-blend-screen">
             <AIOrb />
           </div>
         </Motion.div>
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-8">
+        {/* Soft radial glow */}
+        <Motion.div
+          aria-hidden
+          animate={reduce ? undefined : { scale: [1, 1.08, 1], opacity: [0.5, 0.8, 0.5] }}
+          transition={reduce ? undefined : { duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          className="pointer-events-none absolute left-1/2 top-1/2 -z-0 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_center,var(--color-primary)_0%,transparent_60%)] opacity-20 dark:opacity-40 blur-3xl"
+        />
+
+        <div className="relative z-10 mx-auto w-full max-w-4xl px-4 text-center md:px-8">
           <Motion.div
-            variants={reduce ? undefined : stagger(0.1)}
+            variants={reduce ? undefined : stagger(0.05)}
             initial={reduce ? false : 'hidden'}
             animate={reduce ? false : 'visible'}
-            className="max-w-3xl"
           >
-            <Motion.div variants={bounce} className="mb-5 inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs font-medium">
+            {/* Badge */}
+            <Motion.div variants={bounce} className="mb-6 inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium tracking-wide">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
               </span>
-              <span className="text-text">AI-Powered Developer</span>
-              <span className="text-text-muted hidden sm:inline">· Available for hire</span>
+              <span className="text-text">AI Engineer</span>
+              <span className="text-text-muted">•</span>
+              <span className="text-text">LLM Systems</span>
+              <span className="text-text-muted">•</span>
+              <span className="text-text">Backend Architect</span>
             </Motion.div>
 
-            <Motion.p variants={bounce} className="mb-4 text-sm font-medium tracking-widest text-primary uppercase">
-              <TypingTitle words={profile.typingRoles} />
-            </Motion.p>
-
+            {/* Main headline */}
             <Motion.h1
               variants={bounce}
-              className="text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl"
+              className="text-4xl font-extrabold leading-[1.08] tracking-tight md:text-6xl lg:text-7xl"
             >
-              Hi, I'm <GradientText>{profile.name}</GradientText>
+              Building <GradientText>Intelligent AI Systems</GradientText><br className="hidden md:block" />
+              {' '}That Solve Real Problems
             </Motion.h1>
 
-            <Motion.p
-              variants={bounce}
-              className="mt-6 max-w-xl text-base leading-relaxed text-text-muted md:text-lg"
-            >
-              {profile.summary}
+            {/* Subtext as chips */}
+            <Motion.div variants={bounce} className="mt-8 flex flex-wrap items-center justify-center gap-2">
+              {subtextChips.map((chip) => (
+                <span key={chip} className="inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs font-medium text-text">
+                  <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-br from-primary to-accent" />
+                  {chip}
+                </span>
+              ))}
+            </Motion.div>
+
+            {/* Short value prop */}
+            <Motion.p variants={bounce} className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-text-muted md:text-base">
+              I design and ship production systems that combine LLMs, vector search, and secure .NET + cloud backends — with 12+ years of enterprise engineering under them.
             </Motion.p>
 
-            <Motion.div variants={bounce} className="mt-8 flex flex-wrap gap-3">
-              <Button as="a" href="#contact">Get in touch</Button>
-              <Button as="a" href="#experience" variant="ghost">View experience</Button>
+            {/* CTA row */}
+            <Motion.div variants={bounce} className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              <Button as="a" href="#projects">View Projects</Button>
+              <Button as="a" href="#contact" variant="ghost">Contact Me</Button>
+              {profile.github && (
+                <a
+                  href={profile.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="GitHub"
+                  className="grid h-11 w-11 place-items-center rounded-xl border border-border bg-surface text-text-muted transition-colors hover:text-text"
+                >
+                  <GithubIcon />
+                </a>
+              )}
             </Motion.div>
+
+            {/* Name / signature */}
+            <Motion.p variants={bounce} className="mt-8 text-xs uppercase tracking-[0.25em] text-text-muted">
+              — {profile.name}, {profile.location}
+            </Motion.p>
           </Motion.div>
         </div>
       </div>
 
-      {/* Single slim marquee — the "headline stack" only */}
-      <div className="relative z-10 mt-6 pb-4">
+      {/* Slim marquee */}
+      <div className="relative z-10 mt-4 pb-4">
         <Marquee items={slimMarquee} speed={28} />
       </div>
 
