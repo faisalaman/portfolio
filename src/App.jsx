@@ -4,6 +4,8 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { Hero } from './components/sections/Hero';
 import { About } from './components/sections/About';
+import { Capabilities } from './components/sections/Capabilities';
+import { Projects } from './components/sections/Projects';
 import { Services } from './components/sections/Services';
 import { TechExpertise } from './components/sections/TechExpertise';
 import { Experience } from './components/sections/Experience';
@@ -23,6 +25,8 @@ export default function App() {
       <main>
         <Hero />
         <About />
+        <Capabilities />
+        <Projects />
         <Services />
         <TechExpertise />
         <Experience />

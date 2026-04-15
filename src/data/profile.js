@@ -1,15 +1,16 @@
 export const profile = {
   name: "Faisal Aman",
-  title: "Senior .NET Consultant",
+  title: "AI Engineer & Full-Stack Developer",
   typingRoles: [
+    "AI Engineer",
+    "LLM Integration Specialist",
     "Senior .NET Consultant",
-    "Full Stack Developer",
-    "Technical Lead",
+    "Full-Stack Developer",
     "Cloud Solutions Architect",
-    "Microservices Expert",
+    "Systems Design Lead",
   ],
   summary:
-    "Full Stack Developer with 12+ years of experience in web development and enterprise applications using Microsoft .NET technologies. Currently serving at the General Civil Aviation Authority (GCAA), UAE.",
+    "AI Engineer and Full-Stack Developer with 12+ years building production systems. I design intelligent applications using LLMs, vector databases, and scalable .NET + cloud architectures — currently at the UAE General Civil Aviation Authority.",
   phone: "+971 56 120 6218",
   email: "askfaisal@outlook.com",
   location: "United Arab Emirates",
@@ -191,5 +192,126 @@ export const experience = [
       "Client-site requirements analysis and design workshops",
       "E-Voucher Web API for mobile integration and dashboard development",
     ],
+  },
+];
+
+export const capabilities = [
+  {
+    icon: "llm",
+    title: "LLM Integration",
+    description: "OpenAI, Claude, and open-source model orchestration. Streaming, function calling, structured output.",
+  },
+  {
+    icon: "prompt",
+    title: "Prompt Engineering",
+    description: "System prompts, few-shot patterns, chain-of-thought, tool use design for reliable production behavior.",
+  },
+  {
+    icon: "vector",
+    title: "Vector Databases",
+    description: "FAISS, Pinecone, pgvector. Embedding pipelines, hybrid retrieval, semantic + keyword scoring.",
+  },
+  {
+    icon: "api",
+    title: "API Development",
+    description: ".NET Core Web API and Node.js services. REST, streaming endpoints, rate limiting, OpenAPI contracts.",
+  },
+  {
+    icon: "auth",
+    title: "Auth & Security",
+    description: "UAE Pass, OAuth 2.0 / OIDC, JWT, digital signature (eSeal) validation for government-grade flows.",
+  },
+  {
+    icon: "architecture",
+    title: "System Design",
+    description: "Microservices, event-driven architectures, caching strategies, and scaling LLM-backed services.",
+  },
+];
+
+// Projects use case-study shape — fill in with real links/screenshots as they ship.
+export const projects = [
+  {
+    slug: "ai-chat-assistant",
+    title: "AI Chat Assistant",
+    tagline: "Context-aware LLM chat with memory and streaming",
+    problem:
+      "Internal teams needed a conversational assistant over department knowledge without sending private docs to third-party chat apps.",
+    solution:
+      "Built a chat interface backed by a private .NET Web API that wraps OpenAI with a retrieval layer and persistent conversation memory. Responses stream token-by-token for a ChatGPT-like feel.",
+    architecture: [
+      "React + Framer Motion frontend",
+      ".NET Core Web API for auth, rate limiting, and routing",
+      "OpenAI Chat Completions (streaming) as the primary LLM",
+      "Postgres + pgvector for document chunks and embeddings",
+      "Redis for conversation memory and session state",
+    ],
+    stack: [".NET 8", "OpenAI", "pgvector", "React", "Redis"],
+    features: [
+      "Streaming responses via Server-Sent Events",
+      "Per-user conversation memory with summarization fallback",
+      "Tool calling for internal service integration",
+      "Role-based access to different knowledge bases",
+    ],
+    learnings:
+      "Token streaming across .NET → SSE → React taught me backpressure handling. Embedding drift between ingestion and query time needed a scheduled re-index job.",
+    status: "In development",
+    github: "",
+    demo: "",
+  },
+  {
+    slug: "ai-document-processing",
+    title: "AI Document Processing",
+    tagline: "OCR → extraction → summarization pipeline",
+    problem:
+      "Manual review of scanned PDFs (contracts, forms, IDs) was slow and error-prone. Needed a pipeline that extracts structured fields and generates summaries automatically.",
+    solution:
+      "Upload → OCR → chunking → embedding → LLM extraction prompt against a JSON schema. Output is validated and written back to the source system with a human-in-the-loop review UI.",
+    architecture: [
+      "Node.js worker queue processes uploads asynchronously",
+      "Tesseract (OCR) for image PDFs; native text extraction for digital PDFs",
+      "OpenAI with JSON-schema function calling for structured extraction",
+      "FAISS vector store for similar-document lookup",
+      "React review UI with field-level confidence scores",
+    ],
+    stack: ["Node.js", "Tesseract", "OpenAI", "FAISS", "React"],
+    features: [
+      "Batch and per-file upload modes",
+      "Field-level confidence scoring",
+      "Summary + key-value extraction in one pass",
+      "Review UI with diff against auto-extracted values",
+    ],
+    learnings:
+      "Prompt brittleness on noisy OCR output — solved with a pre-cleaning pass and JSON-schema-constrained generation. Cost control via chunk batching saved ~60%.",
+    status: "Prototype",
+    github: "",
+    demo: "",
+  },
+  {
+    slug: "uae-pass-integration",
+    title: "UAE Pass / eSeal Integration",
+    tagline: "Government-grade digital auth and document signing",
+    problem:
+      "Government e-services require UAE Pass authentication and verifiable digital signatures on issued documents. Third-party SDKs are thin; production rollout needs robust error handling and audit logging.",
+    solution:
+      "Built a reusable .NET library that wraps the UAE Pass OIDC flow and eSeal signature verification. Drop-in middleware for ASP.NET Core with full audit trail and replay protection.",
+    architecture: [
+      "OIDC authorization code flow with PKCE",
+      "Signed ID token validation against UAE Pass JWKS",
+      "eSeal PKCS#7 / CAdES signature verification",
+      "Structured audit log with tamper-evident hashing",
+      "Health check endpoint for upstream monitoring",
+    ],
+    stack: [".NET 8", "UAE Pass", "OIDC", "PKCS#7", "Serilog"],
+    features: [
+      "One-line middleware registration",
+      "Automatic token refresh and clock-skew tolerance",
+      "Signature verification with revocation check",
+      "Structured audit logs shipped to Azure Monitor",
+    ],
+    learnings:
+      "Clock skew across gov networks caused flaky token validation — fixed with a configurable leeway. Signature verification required careful CMS parsing that the stock libraries don't expose cleanly.",
+    status: "In production",
+    github: "",
+    demo: "",
   },
 ];

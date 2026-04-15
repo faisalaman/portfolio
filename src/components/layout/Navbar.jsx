@@ -5,10 +5,9 @@ import { profile } from '../../data/profile';
 
 const links = [
   { href: '#about', label: 'About' },
-  { href: '#services', label: 'Services' },
-  { href: '#tech', label: 'Tech' },
+  { href: '#capabilities', label: 'AI' },
+  { href: '#projects', label: 'Projects' },
   { href: '#experience', label: 'Experience' },
-  { href: '#skills', label: 'Skills' },
   { href: '#contact', label: 'Contact' },
 ];
 
