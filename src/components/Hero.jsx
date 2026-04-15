@@ -20,7 +20,7 @@ function Hero() {
       <div className="container">
         <div className="hero-content blueprint-content">
           <div className="hero-text">
-            <h1 className="hero-name blueprint-name">{profile.name}</h1>
+            <h1 className="hero-name blueprint-name gradient-text">{profile.name}</h1>
             <h2 className="blueprint-role">
               <span className="typing-text">{typedText}</span>
               <span className="typing-cursor">|</span>

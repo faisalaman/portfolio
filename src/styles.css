@@ -1383,3 +1383,24 @@ img { max-width: 100%; display: block; }
   .hero-stats { grid-template-columns: 1fr 1fr; gap: 16px; }
   .services-grid { grid-template-columns: 1fr; }
 }
+
+/* ===== Animated Gradient Text (global) ===== */
+.gradient-text {
+  background: linear-gradient(120deg, var(--primary), var(--accent), var(--primary-light), var(--primary));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gradientShift 8s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-text { animation: none; }
+}
