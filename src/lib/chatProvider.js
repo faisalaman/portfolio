@@ -40,6 +40,6 @@ function keywordFallback(input) {
  * @param {Array<{role: 'user'|'bot', text: string}>} history - prior turns (unused by keyword fallback)
  * @returns {Promise<string>} reply text
  */
-export async function askAgent(message, _history = []) {
+export async function askAgent(message /*, history */) {
   return keywordFallback(message);
 }
