@@ -6,11 +6,15 @@ import { Marquee } from '../ui/Marquee';
 import { fadeUp, stagger } from '../../lib/motion';
 import { profile, techExpertise } from '../../data/profile';
 
-const marqueeItems = Object.values(techExpertise)
-  .flatMap((s) => s.split(/[,/]/))
-  .map((s) => s.trim())
-  .filter(Boolean)
-  .slice(0, 18);
+const aiTokens = ['AI', 'GPT-4', 'LLM', 'RAG', 'Vector DB', 'Embeddings', 'Agents', 'MCP'];
+const marqueeItems = [
+  ...aiTokens,
+  ...Object.values(techExpertise)
+    .flatMap((s) => s.split(/[,/]/))
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 14),
+];
 
 const chips = [
   { label: '.NET', x: '6%',  y: '18%', delay: 0 },
@@ -81,6 +85,14 @@ export function Hero() {
           animate={reduce ? false : 'visible'}
           className="max-w-3xl"
         >
+          <Motion.div variants={fadeUp} className="mb-5 inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs font-medium">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+            </span>
+            <span className="text-text">AI-Powered Developer</span>
+            <span className="text-text-muted">· Available for hire</span>
+          </Motion.div>
           <Motion.p variants={fadeUp} className="mb-4 text-sm font-medium tracking-widest text-primary uppercase">
             <TypingTitle words={profile.typingRoles} />
           </Motion.p>

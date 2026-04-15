@@ -1,6 +1,6 @@
 import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Section } from '../ui/Section';
-import { fadeUp, stagger, viewportOnce } from '../../lib/motion';
+import { flipRight, stagger, viewportOnce } from '../../lib/motion';
 import { skills } from '../../data/profile';
 import { AnimatedHeading } from '../ui/AnimatedHeading';
 
@@ -13,16 +13,17 @@ export function Skills() {
         <p className="mx-auto mt-4 max-w-2xl text-text-muted">Core competencies and proficiency levels.</p>
       </div>
       <Motion.ul
-        variants={reduce ? undefined : stagger(0.05)}
+        variants={reduce ? undefined : stagger(0.06)}
         initial={reduce ? false : 'hidden'}
         whileInView={reduce ? undefined : 'visible'}
         viewport={viewportOnce}
+        style={{ perspective: 1200 }}
         className="grid gap-5 sm:grid-cols-2"
       >
         {skills.map((s) => {
           const pct = `${(s.level / 5) * 100}%`;
           return (
-            <Motion.li key={s.name} variants={reduce ? undefined : fadeUp}>
+            <Motion.li key={s.name} variants={reduce ? undefined : flipRight}>
               <div className="flex items-baseline justify-between text-sm">
                 <span className="font-medium">{s.name}</span>
                 <span className="text-text-muted">{s.level}/5</span>

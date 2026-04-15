@@ -1,7 +1,7 @@
 import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Section } from '../ui/Section';
 import { Card } from '../ui/Card';
-import { slideInLeft, stagger, viewportOnce } from '../../lib/motion';
+import { flipLeft, stagger, viewportOnce } from '../../lib/motion';
 import { experience } from '../../data/profile';
 import { AnimatedHeading } from '../ui/AnimatedHeading';
 
@@ -13,7 +13,7 @@ export function Experience() {
         <AnimatedHeading className="text-3xl font-bold tracking-tight md:text-4xl">Experience</AnimatedHeading>
         <p className="mx-auto mt-4 max-w-2xl text-text-muted">12+ years across enterprise and government engagements.</p>
       </div>
-      <div className="relative">
+      <div className="relative" style={{ perspective: 1200 }}>
         <Motion.span
           aria-hidden
           initial={reduce ? false : { scaleY: 0 }}
@@ -31,7 +31,7 @@ export function Experience() {
           className="space-y-6 md:pl-10"
         >
           {experience.map((job) => (
-            <Motion.div key={`${job.role}-${job.company}`} variants={slideInLeft}>
+            <Motion.div key={`${job.role}-${job.company}`} variants={flipLeft}>
             <Card tilt>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>

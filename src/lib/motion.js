@@ -41,3 +41,37 @@ export const rotateIn = {
   hidden: { opacity: 0, y: 20, rotate: -2 },
   visible: { opacity: 1, y: 0, rotate: 0, transition: { duration: 0.6, ease } },
 };
+
+export const flipLeft = {
+  hidden: { opacity: 0, rotateY: -90, x: -40 },
+  visible: {
+    opacity: 1, rotateY: 0, x: 0,
+    transition: { duration: 0.8, ease },
+  },
+};
+
+export const flipRight = {
+  hidden: { opacity: 0, rotateY: 90, x: 40 },
+  visible: {
+    opacity: 1, rotateY: 0, x: 0,
+    transition: { duration: 0.8, ease },
+  },
+};
+
+export const flipUp = {
+  hidden: { opacity: 0, rotateX: 60, y: 40 },
+  visible: {
+    opacity: 1, rotateX: 0, y: 0,
+    transition: { duration: 0.7, ease },
+  },
+};
+
+export const zoomIn = {
+  hidden: { opacity: 0, scale: 0.7 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease } },
+};
+
+export const blurIn = {
+  hidden: { opacity: 0, filter: 'blur(12px)', y: 12 },
+  visible: { opacity: 1, filter: 'blur(0px)', y: 0, transition: { duration: 0.8, ease } },
+};

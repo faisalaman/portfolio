@@ -2,7 +2,7 @@ import { motion as Motion, useInView, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
 import { Section } from '../ui/Section';
 import { useCounter } from '../../hooks/useCounter';
-import { slideInLeft, slideInRight, viewportOnce } from '../../lib/motion';
+import { flipLeft, flipRight, viewportOnce } from '../../lib/motion';
 import { profile, stats } from '../../data/profile';
 import { AnimatedHeading } from '../ui/AnimatedHeading';
 
@@ -25,9 +25,9 @@ export function About() {
 
   return (
     <Section id="about">
-      <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+      <div className="grid gap-12 lg:grid-cols-2 lg:items-center" style={{ perspective: 1200 }}>
         <Motion.div
-          variants={reduce ? undefined : slideInLeft}
+          variants={reduce ? undefined : flipLeft}
           initial={reduce ? false : 'hidden'}
           whileInView={reduce ? undefined : 'visible'}
           viewport={viewportOnce}
@@ -43,7 +43,7 @@ export function About() {
         </Motion.div>
         <Motion.div
           ref={ref}
-          variants={reduce ? undefined : slideInRight}
+          variants={reduce ? undefined : flipRight}
           initial={reduce ? false : 'hidden'}
           whileInView={reduce ? undefined : 'visible'}
           viewport={viewportOnce}

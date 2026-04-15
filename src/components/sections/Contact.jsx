@@ -1,7 +1,7 @@
 import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Section } from '../ui/Section';
 import { Button } from '../ui/Button';
-import { popIn, viewportOnce } from '../../lib/motion';
+import { zoomIn, viewportOnce } from '../../lib/motion';
 import { profile } from '../../data/profile';
 import { AnimatedHeading } from '../ui/AnimatedHeading';
 
@@ -10,7 +10,7 @@ export function Contact() {
   return (
     <Section id="contact">
       <Motion.div
-        variants={reduce ? undefined : popIn}
+        variants={reduce ? undefined : zoomIn}
         initial={reduce ? false : 'hidden'}
         whileInView={reduce ? undefined : 'visible'}
         viewport={viewportOnce}

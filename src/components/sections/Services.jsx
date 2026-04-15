@@ -1,7 +1,7 @@
 import { motion as Motion } from 'framer-motion';
 import { Section } from '../ui/Section';
 import { Card } from '../ui/Card';
-import { popIn, stagger, viewportOnce } from '../../lib/motion';
+import { flipUp, stagger, viewportOnce } from '../../lib/motion';
 import { services } from '../../data/profile';
 import { AnimatedHeading } from '../ui/AnimatedHeading';
 
@@ -22,14 +22,15 @@ export function Services() {
         <p className="mx-auto mt-4 max-w-2xl text-text-muted">Full-stack engineering services across the .NET ecosystem.</p>
       </div>
       <Motion.div
-        variants={stagger(0.08)}
+        variants={stagger(0.1)}
         initial="hidden"
         whileInView="visible"
         viewport={viewportOnce}
+        style={{ perspective: 1200 }}
         className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
       >
         {services.map((s) => (
-          <Motion.div key={s.title} variants={popIn}>
+          <Motion.div key={s.title} variants={flipUp}>
             <Card tilt className="h-full">
               <div className="grid h-12 w-12 place-items-center rounded-xl bg-primary/10 text-primary">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
