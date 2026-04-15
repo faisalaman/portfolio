@@ -24,7 +24,7 @@ export function About() {
   const reduce = useReducedMotion();
 
   return (
-    <Section id="about">
+    <Section id="about" className="!pt-12 md:!pt-16">
       <div className="grid gap-12 lg:grid-cols-2 lg:items-center" style={{ perspective: 1200 }}>
         <Motion.div
           variants={reduce ? undefined : flipLeft}
