@@ -9,7 +9,19 @@
       "Bash(git commit -m ':*)",
       "Bash(git remote:*)",
       "Bash(git push:*)",
-      "Bash(gh auth:*)"
+      "Bash(gh auth:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(sed -n '1,40p' /Users/askfaisaloutlook.com/Documents/demo-projects/profile/src/hooks/useFadeIn.js)",
+      "Bash(sed -n '1,80p' /Users/askfaisaloutlook.com/Documents/demo-projects/profile/src/styles.css)",
+      "Bash(git commit -m ' *)",
+      "Bash(git checkout *)",
+      "Bash(npm run *)",
+      "Bash(git commit *)",
+      "Bash(npx eslint *)",
+      "Bash(git stash *)",
+      "Bash(kill be787kumf *)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(npm install *)"
     ],
     "additionalDirectories": [
       "/Users/askfaisaloutlook.com/Documents/demo-projects/profile-new/src/components"
