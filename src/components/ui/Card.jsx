@@ -34,8 +34,8 @@ export function Card({ children, className, tilt = false, ...props }) {
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
       style={tiltActive ? { rotateX, rotateY, transformPerspective: 800 } : undefined}
-      whileHover={reduce ? undefined : { y: -4 }}
-      transition={{ type: 'spring', stiffness: 250, damping: 20 }}
+      whileHover={reduce ? undefined : { y: -8, scale: 1.02 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 14, mass: 0.6 }}
       className={cn(
         'spotlight glass rounded-2xl p-6 transition-shadow hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(167,139,250,0.15)]',
         className

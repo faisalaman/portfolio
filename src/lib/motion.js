@@ -75,3 +75,28 @@ export const blurIn = {
   hidden: { opacity: 0, filter: 'blur(12px)', y: 12 },
   visible: { opacity: 1, filter: 'blur(0px)', y: 0, transition: { duration: 0.8, ease } },
 };
+
+// Bouncy spring entrances — overshoot wobble for "playful tech" feel
+export const bounceUp = {
+  hidden: { opacity: 0, y: 60, scale: 0.6 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { type: 'spring', stiffness: 220, damping: 12, mass: 0.9 },
+  },
+};
+
+export const bounceDown = {
+  hidden: { opacity: 0, y: -60, scale: 0.6 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { type: 'spring', stiffness: 220, damping: 12, mass: 0.9 },
+  },
+};
+
+export const bounceRotate = {
+  hidden: { opacity: 0, scale: 0.5, rotate: -8 },
+  visible: {
+    opacity: 1, scale: 1, rotate: 0,
+    transition: { type: 'spring', stiffness: 200, damping: 11, mass: 0.8 },
+  },
+};
