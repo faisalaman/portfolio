@@ -3,6 +3,7 @@
 // Edit the SVG string below to tweak the social card design.
 
 import { writeFile } from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
 import sharp from 'sharp';
 
 const svg = `
