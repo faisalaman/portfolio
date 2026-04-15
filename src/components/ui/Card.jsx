@@ -1,16 +1,18 @@
-import { motion as Motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion as Motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { cn } from '../../lib/cn';
 
 export function Card({ children, className, tilt = false, ...props }) {
   const ref = useRef(null);
+  const reduce = useReducedMotion();
+  const tiltActive = tilt && !reduce;
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [6, -6]), { stiffness: 200, damping: 20 });
   const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-6, 6]), { stiffness: 200, damping: 20 });
 
   const handleMove = (e) => {
-    if (!tilt || !ref.current) return;
+    if (!tiltActive || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
@@ -26,8 +28,8 @@ export function Card({ children, className, tilt = false, ...props }) {
       ref={ref}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
-      style={tilt ? { rotateX, rotateY, transformPerspective: 800 } : undefined}
-      whileHover={{ y: -4 }}
+      style={tiltActive ? { rotateX, rotateY, transformPerspective: 800 } : undefined}
+      whileHover={reduce ? undefined : { y: -4 }}
       transition={{ type: 'spring', stiffness: 250, damping: 20 }}
       className={cn(
         'glass rounded-2xl p-6 transition-shadow hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(167,139,250,0.15)]',

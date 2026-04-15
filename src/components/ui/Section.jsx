@@ -1,14 +1,15 @@
-import { motion as Motion } from 'framer-motion';
+import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { cn } from '../../lib/cn';
 import { fadeUp, viewportOnce } from '../../lib/motion';
 
 export function Section({ id, className, children, container = true }) {
+  const reduce = useReducedMotion();
   return (
     <Motion.section
       id={id}
-      variants={fadeUp}
-      initial="hidden"
-      whileInView="visible"
+      variants={reduce ? undefined : fadeUp}
+      initial={reduce ? false : 'hidden'}
+      whileInView={reduce ? undefined : 'visible'}
       viewport={viewportOnce}
       className={cn('py-20 md:py-28', className)}
     >

@@ -1,17 +1,18 @@
-import { motion as Motion } from 'framer-motion';
+import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { GradientText } from '../ui/GradientText';
 import { fadeUp, stagger } from '../../lib/motion';
 import { profile } from '../../data/profile';
 
 export function Hero() {
+  const reduce = useReducedMotion();
   return (
     <section id="top" className="relative min-h-[92vh] flex items-center pt-28 pb-20">
       <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
         <Motion.div
-          variants={stagger(0.12, 0.1)}
-          initial="hidden"
-          animate="visible"
+          variants={reduce ? undefined : stagger(0.12, 0.1)}
+          initial={reduce ? false : 'hidden'}
+          animate={reduce ? false : 'visible'}
           className="max-w-3xl"
         >
           <Motion.p variants={fadeUp} className="mb-4 text-sm font-medium tracking-widest text-primary uppercase">

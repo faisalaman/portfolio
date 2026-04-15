@@ -20,7 +20,7 @@ export function Experience() {
       >
         {experience.map((job) => (
           <Motion.div key={`${job.role}-${job.company}`} variants={fadeUp}>
-            <Card tilt={false}>
+            <Card tilt>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-semibold">{job.role}</h3>
