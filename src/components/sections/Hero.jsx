@@ -54,12 +54,25 @@ export function Hero() {
           />
         </Motion.div>
 
-        <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-10 px-4 md:px-8 lg:grid-cols-[1.2fr_1fr]">
-          {/* LEFT: text */}
+        {/* Ambient AI orb — fills the hero as background */}
+        <Motion.div
+          aria-hidden
+          initial={reduce ? false : { opacity: 0, scale: 0.7 }}
+          animate={reduce ? false : { opacity: 1, scale: 1 }}
+          transition={reduce ? undefined : { type: 'spring', stiffness: 80, damping: 18, mass: 1.2, delay: 0.2 }}
+          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
+        >
+          <div className="w-[min(150vh,150vw)] opacity-30 dark:opacity-50 mix-blend-screen">
+            <AIOrb />
+          </div>
+        </Motion.div>
+
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-8">
           <Motion.div
             variants={reduce ? undefined : stagger(0.1)}
             initial={reduce ? false : 'hidden'}
             animate={reduce ? false : 'visible'}
+            className="max-w-3xl"
           >
             <Motion.div variants={bounce} className="mb-5 inline-flex items-center gap-2 rounded-full glass px-3 py-1.5 text-xs font-medium">
               <span className="relative flex h-2 w-2">
@@ -92,16 +105,6 @@ export function Hero() {
               <Button as="a" href="#contact">Get in touch</Button>
               <Button as="a" href="#experience" variant="ghost">View experience</Button>
             </Motion.div>
-          </Motion.div>
-
-          {/* RIGHT: animated AI neural orb */}
-          <Motion.div
-            initial={reduce ? false : { opacity: 0, scale: 0.6, rotate: -10 }}
-            animate={reduce ? false : { opacity: 1, scale: 1, rotate: 0 }}
-            transition={reduce ? undefined : { type: 'spring', stiffness: 120, damping: 14, mass: 1, delay: 0.3 }}
-            className="mx-auto hidden lg:block"
-          >
-            <AIOrb />
           </Motion.div>
         </div>
       </div>

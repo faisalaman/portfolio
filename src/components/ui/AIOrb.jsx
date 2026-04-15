@@ -110,24 +110,19 @@ export function AIOrb({ className = '' }) {
           </Motion.g>
         ))}
 
-        {/* Core glowing center */}
+        {/* Core glowing center (no text) */}
         <Motion.circle
           cx="50" cy="50" r="14"
           fill="url(#core-grad)"
-          animate={reduce ? undefined : { r: [14, 16, 14], opacity: [0.7, 1, 0.7] }}
+          animate={reduce ? undefined : { r: [12, 16, 12], opacity: [0.6, 1, 0.6] }}
           transition={reduce ? undefined : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <text
-          x="50" y="53"
-          textAnchor="middle"
-          fill="var(--color-text)"
-          fontSize="6"
-          fontWeight="800"
-          letterSpacing="1"
-          fontFamily="Inter, sans-serif"
-        >
-          AI
-        </text>
+        <Motion.circle
+          cx="50" cy="50" r="5"
+          fill="var(--color-accent)"
+          animate={reduce ? undefined : { r: [4, 7, 4], opacity: [0.9, 0.5, 0.9] }}
+          transition={reduce ? undefined : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        />
       </svg>
     </div>
   );
