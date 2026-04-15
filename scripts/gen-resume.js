@@ -1,7 +1,6 @@
-// Generates public/Faisal-Aman-AI-Developer-Resume.pdf from src/data/profile.js.
+// Generates public/Faisal_Aman_CV_UAE.pdf from src/data/profile.js.
+// Two-column layout: dark navy sidebar + main content column.
 // Run:  npm run gen:resume
-//
-// Tweaking: edit profile.js (source of truth) or the layout below.
 
 import { writeFileSync } from 'node:fs';
 import { Buffer } from 'node:buffer';
@@ -17,16 +16,30 @@ import {
 
 const OUT = 'public/Faisal_Aman_CV_UAE.pdf';
 
-// ---- palette (paper-friendly) ----
+// ---- palette ----
 const C = {
-  text: '#0f172a',
-  muted: '#64748b',
-  primary: '#4f46e5',
-  accent: '#0ea5e9',
-  rule: '#e2e8f0',
+  sidebar: '#0f2847',
+  sidebarText: '#ffffff',
+  sidebarMuted: '#b8c5d6',
+  accent: '#e0b84a',
+  text: '#1a2332',
+  muted: '#5a6b82',
+  primary: '#0f2847',
+  rule: '#d8dee8',
+  barOn: '#e0b84a',
+  barOff: '#3a5270',
 };
 
-const doc = new PDFDocument({ size: 'A4', margin: 44 });
+// ---- layout ----
+const PAGE_W = 595.28; // A4
+const PAGE_H = 841.89;
+const SIDEBAR_W = 200;
+const MAIN_X = SIDEBAR_W + 28;
+const MAIN_W = PAGE_W - MAIN_X - 36;
+const SIDEBAR_PAD_X = 22;
+const SIDEBAR_INNER_W = SIDEBAR_W - SIDEBAR_PAD_X * 2;
+
+const doc = new PDFDocument({ size: 'A4', margin: 0, bufferPages: true });
 const chunks = [];
 doc.on('data', (c) => chunks.push(c));
 doc.on('end', () => {
@@ -34,119 +47,250 @@ doc.on('end', () => {
   console.log('✔ wrote', OUT);
 });
 
-// --- helpers ---
-const W = doc.page.width - doc.page.margins.left - doc.page.margins.right;
-
-function h1(text) {
-  doc.fillColor(C.text).font('Helvetica-Bold').fontSize(22).text(text);
+// Paint sidebar background on every page
+function paintSidebar() {
+  doc.save();
+  doc.rect(0, 0, SIDEBAR_W, PAGE_H).fill(C.sidebar);
+  doc.restore();
 }
-function role(text) {
-  doc.fillColor(C.primary).font('Helvetica-Bold').fontSize(11).text(text);
-}
-function hr() {
-  const y = doc.y + 4;
-  doc.moveTo(doc.page.margins.left, y).lineTo(doc.page.margins.left + W, y).strokeColor(C.rule).lineWidth(0.7).stroke();
-  doc.moveDown(0.6);
-}
-function sectionHeading(text) {
-  doc.moveDown(0.6);
-  doc.fillColor(C.primary).font('Helvetica-Bold').fontSize(10).text(text.toUpperCase(), { characterSpacing: 1.2 });
-  hr();
-}
-function muted(text, opts = {}) {
-  doc.fillColor(C.muted).font('Helvetica').fontSize(9.5).text(text, opts);
-}
-function body(text, opts = {}) {
-  doc.fillColor(C.text).font('Helvetica').fontSize(10).text(text, opts);
-}
-function bullet(text) {
-  doc.fillColor(C.text).font('Helvetica').fontSize(10).list([text], { bulletRadius: 1.6, textIndent: 10, bulletIndent: 4 });
-}
+doc.on('pageAdded', paintSidebar);
+paintSidebar();
 
-// ---- HEADER ----
-h1(profile.name);
-role(profile.title);
-doc.moveDown(0.3);
-muted([
-  profile.email,
-  profile.phone,
-  profile.location,
-  profile.linkedin,
-  profile.github,
-].filter(Boolean).join('  ·  '));
-hr();
+// ---- main column cursor ----
+let mainY = 44;
+const MAIN_TOP = 44;
+const MAIN_BOTTOM = PAGE_H - 44;
 
-// ---- SUMMARY ----
-sectionHeading('Summary');
-body(profile.summary);
-
-// ---- AI CAPABILITIES ----
-sectionHeading('AI Capabilities');
-capabilities.forEach((c) => {
-  doc.fillColor(C.text).font('Helvetica-Bold').fontSize(10).text(c.title, { continued: true });
-  doc.font('Helvetica').fillColor(C.muted).text('  —  ' + c.description);
-});
-
-// ---- CORE SKILLS ----
-sectionHeading('Core Skills');
-const groups = skills.reduce((acc, s) => {
-  const key = s.group || 'Other';
-  (acc[key] = acc[key] || []).push(s);
-  return acc;
-}, {});
-['AI', 'Backend', 'Cloud', 'Frontend', 'Other'].forEach((g) => {
-  if (!groups[g]) return;
-  const line = groups[g].map((s) => `${s.name}`).join(', ');
-  doc.fillColor(C.primary).font('Helvetica-Bold').fontSize(10).text(`${g}: `, { continued: true });
-  doc.fillColor(C.text).font('Helvetica').text(line);
-});
-
-// ---- TECH STACK ----
-sectionHeading('Tech Stack');
-Object.entries(techExpertise).forEach(([k, v]) => {
-  doc.fillColor(C.primary).font('Helvetica-Bold').fontSize(10).text(`${k}: `, { continued: true });
-  doc.fillColor(C.text).font('Helvetica').text(v);
-});
-
-// ---- PROJECTS (case-study digest) ----
-sectionHeading('Selected Projects');
-projects.forEach((p) => {
-  doc.fillColor(C.text).font('Helvetica-Bold').fontSize(11).text(p.title, { continued: true });
-  doc.fillColor(C.muted).font('Helvetica').fontSize(9).text('  ·  ' + p.status);
-  muted(p.tagline);
-  body(`Problem — ${p.problem}`);
-  body(`Solution — ${p.solution}`);
-  muted(`Stack: ${p.stack.join(', ')}`);
-  doc.moveDown(0.4);
-});
-
-// ---- EXPERIENCE ----
-sectionHeading('Experience');
-experience.forEach((j) => {
-  doc.fillColor(C.text).font('Helvetica-Bold').fontSize(11).text(j.role, { continued: true });
-  doc.fillColor(C.muted).font('Helvetica').fontSize(9.5).text('  ·  ' + j.period);
-  doc.fillColor(C.primary).font('Helvetica').fontSize(10).text(j.company);
-  if (j.description) muted(j.description);
-  if (Array.isArray(j.highlights)) {
-    j.highlights.forEach((h) => bullet(h));
+function ensureMainSpace(h) {
+  if (mainY + h > MAIN_BOTTOM) {
+    doc.addPage();
+    mainY = MAIN_TOP;
   }
-  if (Array.isArray(j.tech) && j.tech.length) {
-    muted(`Tech: ${j.tech.join(', ')}`);
-  }
-  doc.moveDown(0.4);
-});
+}
 
-// ---- EDUCATION + CERTS ----
-sectionHeading('Education & Certifications');
-doc.fillColor(C.text).font('Helvetica-Bold').fontSize(10).text(profile.education.degree, { continued: true });
-doc.fillColor(C.muted).font('Helvetica').text('  —  ' + profile.education.school);
+function mainText(text, opts = {}) {
+  const {
+    font = 'Helvetica',
+    size = 10,
+    color = C.text,
+    gap = 2,
+    indent = 0,
+  } = opts;
+  doc.font(font).fontSize(size).fillColor(color);
+  const width = MAIN_W - indent;
+  const h = doc.heightOfString(text, { width });
+  ensureMainSpace(h + gap);
+  doc.text(text, MAIN_X + indent, mainY, { width });
+  mainY += h + gap;
+}
+
+function mainHeading(label) {
+  ensureMainSpace(30);
+  mainY += 6;
+  doc.font('Helvetica-Bold').fontSize(12).fillColor(C.primary);
+  const size = 12;
+  // diamond bullet + label
+  const labelText = `◆  ${label.toUpperCase()}`;
+  doc.text(labelText, MAIN_X, mainY, { characterSpacing: 1.4, width: MAIN_W });
+  mainY += doc.heightOfString(labelText, { width: MAIN_W, characterSpacing: 1.4 }) + 3;
+  doc.moveTo(MAIN_X, mainY).lineTo(MAIN_X + 80, mainY).lineWidth(1.2).strokeColor(C.accent).stroke();
+  mainY += 8;
+  void size;
+}
+
+function mainBullet(text) {
+  doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
+  const indent = 12;
+  const width = MAIN_W - indent;
+  const h = doc.heightOfString(text, { width });
+  ensureMainSpace(h + 3);
+  doc.fillColor(C.accent).text('▸', MAIN_X, mainY, { width: 10 });
+  doc.fillColor(C.text).text(text, MAIN_X + indent, mainY, { width });
+  mainY += h + 3;
+}
+
+// ---- sidebar cursor ----
+let sideY = 40;
+
+function sideBlock(fn, extraGap = 10) {
+  fn();
+  sideY += extraGap;
+}
+
+function sideText(text, opts = {}) {
+  const {
+    font = 'Helvetica',
+    size = 9,
+    color = C.sidebarText,
+    gap = 2,
+    align = 'left',
+  } = opts;
+  doc.font(font).fontSize(size).fillColor(color);
+  const h = doc.heightOfString(text, { width: SIDEBAR_INNER_W, align });
+  doc.text(text, SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W, align });
+  sideY += h + gap;
+}
+
+function sideHeading(label) {
+  sideY += 6;
+  doc.font('Helvetica-Bold').fontSize(10).fillColor(C.accent);
+  const labelText = `◆  ${label.toUpperCase()}`;
+  doc.text(labelText, SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W, characterSpacing: 1.2 });
+  sideY += doc.heightOfString(labelText, { width: SIDEBAR_INNER_W, characterSpacing: 1.2 }) + 4;
+  doc.moveTo(SIDEBAR_PAD_X, sideY).lineTo(SIDEBAR_PAD_X + 60, sideY).lineWidth(1).strokeColor(C.accent).stroke();
+  sideY += 8;
+}
+
+function sideSkillBar(name, level) {
+  doc.font('Helvetica').fontSize(8.5).fillColor(C.sidebarText);
+  doc.text(name, SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W });
+  sideY += doc.heightOfString(name, { width: SIDEBAR_INNER_W }) + 3;
+  // 5 blocks
+  const blockW = (SIDEBAR_INNER_W - 4 * 2) / 5;
+  for (let i = 0; i < 5; i++) {
+    const x = SIDEBAR_PAD_X + i * (blockW + 2);
+    doc.rect(x, sideY, blockW, 5).fill(i < level ? C.barOn : C.barOff);
+  }
+  sideY += 11;
+}
+
+// ================== SIDEBAR CONTENT ==================
+sideY = 38;
+
+// Photo placeholder
+const photoSize = 70;
+const photoX = SIDEBAR_PAD_X + (SIDEBAR_INNER_W - photoSize) / 2;
+doc.save();
+doc.circle(photoX + photoSize / 2, sideY + photoSize / 2, photoSize / 2).lineWidth(1.5).strokeColor(C.accent).stroke();
+doc.font('Helvetica').fontSize(8).fillColor(C.sidebarMuted).text('PHOTO', photoX, sideY + photoSize / 2 - 4, { width: photoSize, align: 'center' });
+doc.restore();
+sideY += photoSize + 14;
+
+// Name
+const [firstName, ...rest] = profile.name.split(' ');
+doc.font('Helvetica-Bold').fontSize(22).fillColor(C.sidebarText);
+doc.text(firstName.toUpperCase(), SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W, align: 'center' });
+sideY += 24;
+doc.font('Helvetica-Bold').fontSize(22).fillColor(C.accent);
+doc.text(rest.join(' ').toUpperCase(), SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W, align: 'center' });
+sideY += 26;
+doc.font('Helvetica').fontSize(9.5).fillColor(C.sidebarMuted);
+doc.text(profile.title, SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W, align: 'center' });
+sideY += 22;
+
+// Divider
+doc.moveTo(SIDEBAR_PAD_X, sideY).lineTo(SIDEBAR_PAD_X + SIDEBAR_INNER_W, sideY).lineWidth(0.8).strokeColor(C.accent).stroke();
+sideY += 10;
+
+// Contact
+sideHeading('Contact');
+sideText(`✆  ${profile.phone}`, { size: 8.5, gap: 5 });
+sideText(`✉  ${profile.email}`, { size: 8.5, gap: 5 });
+sideText(`⌂  ${profile.location}`, { size: 8.5, gap: 5 });
+sideText(`⦿  ${profile.linkedin.replace(/^https?:\/\//, '')}`, { size: 8, gap: 5 });
+
+// Personal info
+sideHeading('Personal Info');
+doc.font('Helvetica-Bold').fontSize(9).fillColor(C.sidebarText).text('Nationality:', SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W });
+sideY += 12;
+sideText(profile.nationality, { size: 8.5, color: C.sidebarMuted, gap: 6 });
+doc.font('Helvetica-Bold').fontSize(9).fillColor(C.sidebarText).text('Visa Status:', SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W });
+sideY += 12;
+sideText(profile.visaStatus, { size: 8.5, color: C.sidebarMuted, gap: 6 });
+doc.font('Helvetica-Bold').fontSize(9).fillColor(C.sidebarText).text('Languages:', SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W });
+sideY += 12;
+sideText(profile.languages, { size: 8.5, color: C.sidebarMuted, gap: 6 });
+
+// Core Skills (top-ranked)
+sideHeading('Core Skills');
+const topSkills = [...skills].sort((a, b) => b.level - a.level).slice(0, 10);
+topSkills.forEach((s) => sideSkillBar(s.name, s.level));
+
+// Education
+sideHeading('Education');
+doc.font('Helvetica-Bold').fontSize(9.5).fillColor(C.sidebarText);
+doc.text(profile.education.degree, SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W });
+sideY += doc.heightOfString(profile.education.degree, { width: SIDEBAR_INNER_W }) + 3;
+sideText(profile.education.school, { size: 8.5, color: C.sidebarMuted, gap: 10 });
+
+// Certifications
+sideHeading('Certification');
 (profile.certifications || []).forEach((c) => {
-  doc.fillColor(C.text).font('Helvetica-Bold').fontSize(10).text(c.name, { continued: true });
-  doc.fillColor(C.muted).font('Helvetica').text('  —  ' + c.description);
+  doc.font('Helvetica-Bold').fontSize(9.5).fillColor(C.sidebarText);
+  doc.text(c.name, SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W });
+  sideY += 12;
+  sideText(c.description, { size: 8.5, color: C.sidebarMuted, gap: 6 });
 });
 
-// ---- FOOTER ----
-doc.moveDown(0.8);
-muted(`Languages: ${profile.languages}  ·  ${profile.nationality ?? ''}  ·  ${profile.visaStatus ?? ''}`.replace(/ +· +$/, ''));
+// ================== MAIN CONTENT ==================
+mainY = MAIN_TOP;
+
+// Summary
+mainHeading('Professional Summary');
+mainText(profile.summary, { size: 10, color: C.text, gap: 6 });
+
+// Tech expertise
+mainHeading('Technical Expertise');
+Object.entries(techExpertise).forEach(([k, v]) => {
+  const combined = `${k}: ${v}`;
+  doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
+  const h = doc.heightOfString(combined, { width: MAIN_W });
+  ensureMainSpace(h + 4);
+  doc.font('Helvetica-Bold').fillColor(C.primary).text(`${k}: `, MAIN_X, mainY, { width: MAIN_W, continued: true });
+  doc.font('Helvetica').fillColor(C.text).text(v);
+  mainY += h + 4;
+});
+
+// AI capabilities
+mainHeading('AI Capabilities');
+capabilities.forEach((cap) => {
+  const line = `${cap.title} — ${cap.description}`;
+  doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
+  const h = doc.heightOfString(line, { width: MAIN_W });
+  ensureMainSpace(h + 3);
+  doc.font('Helvetica-Bold').fillColor(C.text).text(`${cap.title} `, MAIN_X, mainY, { width: MAIN_W, continued: true });
+  doc.font('Helvetica').fillColor(C.muted).text(`— ${cap.description}`);
+  mainY += h + 3;
+});
+
+// Selected projects
+mainHeading('Selected Projects');
+projects.forEach((p) => {
+  ensureMainSpace(40);
+  doc.font('Helvetica-Bold').fontSize(10.5).fillColor(C.primary);
+  doc.text(p.title, MAIN_X, mainY, { width: MAIN_W, continued: true });
+  doc.font('Helvetica').fontSize(9).fillColor(C.muted).text(`  ·  ${p.status}`);
+  mainY += doc.heightOfString(p.title, { width: MAIN_W }) + 2;
+  mainText(p.tagline, { font: 'Helvetica-Oblique', size: 9, color: C.muted, gap: 3 });
+  mainText(p.solution, { size: 9.5, color: C.text, gap: 2 });
+  mainText(`Stack: ${p.stack.join(', ')}`, { size: 8.5, color: C.muted, gap: 8 });
+});
+
+// Experience
+mainHeading('Professional Experience');
+experience.forEach((j) => {
+  ensureMainSpace(40);
+  doc.font('Helvetica-Bold').fontSize(11).fillColor(C.primary);
+  doc.text(j.role, MAIN_X, mainY, { width: MAIN_W, continued: true });
+  doc.font('Helvetica').fontSize(9).fillColor(C.muted).text(`  ·  ${j.period}`);
+  mainY += doc.heightOfString(j.role, { width: MAIN_W }) + 2;
+  mainText(j.company, { font: 'Helvetica-Oblique', size: 9.5, color: C.muted, gap: 3 });
+  if (j.description) mainText(j.description, { size: 9, color: C.muted, gap: 3 });
+  (j.highlights || []).forEach((h) => mainBullet(h));
+  if (j.tech && j.tech.length) mainText(`Tech: ${j.tech.join(', ')}`, { size: 8.5, color: C.muted, gap: 8 });
+});
+
+// Page numbers
+const range = doc.bufferedPageRange();
+for (let i = 0; i < range.count; i++) {
+  doc.switchToPage(i);
+  doc.font('Helvetica').fontSize(8).fillColor(C.muted);
+  doc.text(
+    `Faisal Aman  |  ${profile.title}  |  Page ${i + 1}`,
+    MAIN_X,
+    PAGE_H - 24,
+    { width: MAIN_W, align: 'center' }
+  );
+}
 
 doc.end();

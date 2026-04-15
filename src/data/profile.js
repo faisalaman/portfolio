@@ -81,6 +81,8 @@ export const skills = [
   { name: "Vector Databases (FAISS / pgvector)", level: 4, group: "AI" },
   { name: "RAG / Embeddings Pipelines", level: 4, group: "AI" },
   { name: "AI Agents & Tool Use", level: 3, group: "AI" },
+  { name: "Model Context Protocol (MCP)", level: 4, group: "AI" },
+  { name: "LangChain / Semantic Kernel", level: 4, group: "AI" },
   { name: "C# / .NET Core", level: 5, group: "Backend" },
   { name: "ASP.NET Web API", level: 5, group: "Backend" },
   { name: "Node.js", level: 4, group: "Backend" },
@@ -289,6 +291,34 @@ export const projects = [
     learnings:
       "Prompt brittleness on noisy OCR output — solved with a pre-cleaning pass and JSON-schema-constrained generation. Cost control via chunk batching saved ~60%.",
     status: "Prototype",
+    github: "",
+    demo: "",
+  },
+  {
+    slug: "ai-code-review-agent",
+    title: "AI Code Review Agent",
+    tagline: "Autonomous PR reviewer with MCP tool access",
+    problem:
+      "Engineering teams waited hours for human PR reviews on routine changes, creating bottlenecks for small fixes and dependency bumps.",
+    solution:
+      "Built an autonomous review agent using Claude with Model Context Protocol (MCP) tools to read diffs, run static analysis, check tests, and post inline GitHub comments with severity ratings.",
+    architecture: [
+      ".NET 8 worker listens on GitHub webhook for PR events",
+      "Claude Sonnet orchestrates review via MCP tool calls",
+      "MCP servers expose git, ESLint, test-runner, and coverage tools",
+      "Findings ranked by severity and posted as inline review comments",
+      "Feedback loop logs reviewer overrides for prompt tuning",
+    ],
+    stack: [".NET 8", "Claude API", "MCP", "GitHub API", "Azure Functions"],
+    features: [
+      "Inline comments on risky diffs with rationale",
+      "Auto-approves trivial changes (docs, dep bumps) after checks pass",
+      "Security lint pass for secrets and OWASP red flags",
+      "Per-repo prompt profiles for team conventions",
+    ],
+    learnings:
+      "Tool selection quality mattered more than prompt length — giving the model fewer, sharper MCP tools cut false positives by ~40%. Streaming tool results kept latency under 30s per PR.",
+    status: "In development",
     github: "",
     demo: "",
   },
