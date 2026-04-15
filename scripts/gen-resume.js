@@ -88,24 +88,32 @@ function mainHeading(label) {
   ensureMainSpace(30);
   mainY += 6;
   doc.font('Helvetica-Bold').fontSize(12).fillColor(C.primary);
-  const size = 12;
-  // diamond bullet + label
-  const labelText = `◆  ${label.toUpperCase()}`;
+  const labelText = label.toUpperCase();
   doc.text(labelText, MAIN_X, mainY, { characterSpacing: 1.4, width: MAIN_W });
   mainY += doc.heightOfString(labelText, { width: MAIN_W, characterSpacing: 1.4 }) + 3;
   doc.moveTo(MAIN_X, mainY).lineTo(MAIN_X + 80, mainY).lineWidth(1.2).strokeColor(C.accent).stroke();
   mainY += 8;
-  void size;
+}
+
+function sanitize(s) {
+  if (!s) return s;
+  return String(s)
+    .replace(/[→➜➔]/g, '->')
+    .replace(/[•●]/g, '-')
+    .replace(/[…]/g, '...')
+    .replace(/[""]/g, '"')
+    .replace(/['']/g, "'");
 }
 
 function mainBullet(text) {
   doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
-  const indent = 12;
+  const indent = 10;
   const width = MAIN_W - indent;
-  const h = doc.heightOfString(text, { width });
+  const t = sanitize(text);
+  const h = doc.heightOfString(t, { width });
   ensureMainSpace(h + 3);
-  doc.fillColor(C.accent).text('▸', MAIN_X, mainY, { width: 10 });
-  doc.fillColor(C.text).text(text, MAIN_X + indent, mainY, { width });
+  doc.fillColor(C.accent).text('-', MAIN_X, mainY, { width: 8 });
+  doc.fillColor(C.text).text(t, MAIN_X + indent, mainY, { width });
   mainY += h + 3;
 }
 
@@ -134,7 +142,7 @@ function sideText(text, opts = {}) {
 function sideHeading(label) {
   sideY += 6;
   doc.font('Helvetica-Bold').fontSize(10).fillColor(C.accent);
-  const labelText = `◆  ${label.toUpperCase()}`;
+  const labelText = label.toUpperCase();
   doc.text(labelText, SIDEBAR_PAD_X, sideY, { width: SIDEBAR_INNER_W, characterSpacing: 1.2 });
   sideY += doc.heightOfString(labelText, { width: SIDEBAR_INNER_W, characterSpacing: 1.2 }) + 4;
   doc.moveTo(SIDEBAR_PAD_X, sideY).lineTo(SIDEBAR_PAD_X + 60, sideY).lineWidth(1).strokeColor(C.accent).stroke();
@@ -184,10 +192,10 @@ sideY += 10;
 
 // Contact
 sideHeading('Contact');
-sideText(`✆  ${profile.phone}`, { size: 8.5, gap: 5 });
-sideText(`✉  ${profile.email}`, { size: 8.5, gap: 5 });
-sideText(`⌂  ${profile.location}`, { size: 8.5, gap: 5 });
-sideText(`⦿  ${profile.linkedin.replace(/^https?:\/\//, '')}`, { size: 8, gap: 5 });
+sideText(`Tel:  ${profile.phone}`, { size: 8.5, gap: 5 });
+sideText(`Email:  ${profile.email}`, { size: 8.5, gap: 5 });
+sideText(`Loc:  ${profile.location}`, { size: 8.5, gap: 5 });
+sideText(`in:  ${profile.linkedin.replace(/^https?:\/\//, '')}`, { size: 8, gap: 5 });
 
 // Personal info
 sideHeading('Personal Info');
@@ -261,8 +269,8 @@ projects.forEach((p) => {
   doc.text(p.title, MAIN_X, mainY, { width: MAIN_W, continued: true });
   doc.font('Helvetica').fontSize(9).fillColor(C.muted).text(`  ·  ${p.status}`);
   mainY += doc.heightOfString(p.title, { width: MAIN_W }) + 2;
-  mainText(p.tagline, { font: 'Helvetica-Oblique', size: 9, color: C.muted, gap: 3 });
-  mainText(p.solution, { size: 9.5, color: C.text, gap: 2 });
+  mainText(sanitize(p.tagline), { font: 'Helvetica-Oblique', size: 9, color: C.muted, gap: 3 });
+  mainText(sanitize(p.solution), { size: 9.5, color: C.text, gap: 2 });
   mainText(`Stack: ${p.stack.join(', ')}`, { size: 8.5, color: C.muted, gap: 8 });
 });
 
