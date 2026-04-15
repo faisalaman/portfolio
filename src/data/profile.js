@@ -76,16 +76,21 @@ export const services = [
 ];
 
 export const skills = [
-  { name: "C# / .NET Core", level: 5 },
-  { name: "ASP.NET Web API", level: 5 },
-  { name: "Angular", level: 5 },
-  { name: "SQL Server", level: 5 },
-  { name: "Azure / AWS", level: 4 },
-  { name: "Microservices", level: 4 },
-  { name: "Node.js", level: 3 },
-  { name: "React Native", level: 3 },
-  { name: "DevOps / CI-CD", level: 4 },
-  { name: "Agile / Scrum", level: 5 },
+  { name: "LLM Integration (OpenAI / Claude)", level: 4, group: "AI" },
+  { name: "Prompt Engineering", level: 4, group: "AI" },
+  { name: "Vector Databases (FAISS / pgvector)", level: 4, group: "AI" },
+  { name: "RAG / Embeddings Pipelines", level: 4, group: "AI" },
+  { name: "AI Agents & Tool Use", level: 3, group: "AI" },
+  { name: "C# / .NET Core", level: 5, group: "Backend" },
+  { name: "ASP.NET Web API", level: 5, group: "Backend" },
+  { name: "Node.js", level: 4, group: "Backend" },
+  { name: "SQL Server", level: 5, group: "Backend" },
+  { name: "Microservices", level: 4, group: "Backend" },
+  { name: "Azure / AWS", level: 4, group: "Cloud" },
+  { name: "DevOps / CI-CD", level: 4, group: "Cloud" },
+  { name: "React", level: 4, group: "Frontend" },
+  { name: "Angular", level: 5, group: "Frontend" },
+  { name: "TypeScript", level: 4, group: "Frontend" },
 ];
 
 export const techExpertise = {
