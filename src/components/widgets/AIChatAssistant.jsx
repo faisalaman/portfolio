@@ -1,23 +1,7 @@
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import { useState } from 'react';
-import { profile, services, techExpertise } from '../../data/profile';
-
-const responses = [
-  { keys: ['who', 'name', 'about you'], answer: () => `I'm ${profile.name} — ${profile.title}. ${profile.summary}` },
-  { keys: ['contact', 'email', 'reach', 'phone'], answer: () => `Email: ${profile.email} · Phone: ${profile.phone}` },
-  { keys: ['location', 'where', 'based'], answer: () => `Based in ${profile.location}.` },
-  { keys: ['service', 'do', 'offer', 'help'], answer: () => `I offer: ${services.map((s) => s.title).join(', ')}.` },
-  { keys: ['tech', 'stack', 'skills', 'language', 'framework'], answer: () => `Core stack: ${Object.values(techExpertise).slice(0, 3).join(' · ')}.` },
-  { keys: ['linkedin'], answer: () => `LinkedIn: ${profile.linkedin}` },
-];
-
-function reply(input) {
-  const q = input.toLowerCase();
-  for (const r of responses) {
-    if (r.keys.some((k) => q.includes(k))) return r.answer();
-  }
-  return "I can answer questions about my background, services, tech stack, location, or how to get in touch. Try asking about one of those!";
-}
+import { profile } from '../../data/profile';
+import { askAgent } from '../../lib/chatProvider';
 
 export function AIChatAssistant() {
   const [open, setOpen] = useState(false);
@@ -25,13 +9,24 @@ export function AIChatAssistant() {
     { role: 'bot', text: `Hi! I'm a small assistant. Ask me about ${profile.name.split(' ')[0]}'s work, stack, or how to get in touch.` },
   ]);
   const [input, setInput] = useState('');
+  const [pending, setPending] = useState(false);
 
-  const send = (e) => {
+  const send = async (e) => {
     e.preventDefault();
     const text = input.trim();
-    if (!text) return;
-    setMessages((m) => [...m, { role: 'user', text }, { role: 'bot', text: reply(text) }]);
+    if (!text || pending) return;
+    const history = messages;
+    setMessages((m) => [...m, { role: 'user', text }]);
     setInput('');
+    setPending(true);
+    try {
+      const reply = await askAgent(text, history);
+      setMessages((m) => [...m, { role: 'bot', text: reply }]);
+    } catch (err) {
+      setMessages((m) => [...m, { role: 'bot', text: `Something went wrong: ${err.message ?? 'unknown error'}` }]);
+    } finally {
+      setPending(false);
+    }
   };
 
   return (
@@ -74,10 +69,13 @@ export function AIChatAssistant() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask a question…"
-                className="flex-1 rounded-xl border border-border bg-bg-alt px-3 py-2 text-sm outline-none focus:border-primary"
+                placeholder={pending ? 'Thinking…' : 'Ask a question…'}
+                disabled={pending}
+                className="flex-1 rounded-xl border border-border bg-bg-alt px-3 py-2 text-sm outline-none focus:border-primary disabled:opacity-60"
               />
-              <button type="submit" className="rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white">Send</button>
+              <button type="submit" disabled={pending} className="rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-white disabled:opacity-60">
+                {pending ? '…' : 'Send'}
+              </button>
             </form>
           </Motion.div>
         )}
