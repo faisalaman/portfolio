@@ -7,6 +7,7 @@ import { Buffer } from 'node:buffer';
 import PDFDocument from 'pdfkit';
 import {
   profile,
+  capabilities,
   projects,
   experience,
   skills,
@@ -84,14 +85,14 @@ function mainText(text, opts = {}) {
 }
 
 function mainHeading(label) {
-  ensureMainSpace(24);
-  mainY += 3;
-  doc.font('Helvetica-Bold').fontSize(10.5).fillColor(C.primary);
+  ensureMainSpace(30);
+  mainY += 6;
+  doc.font('Helvetica-Bold').fontSize(12).fillColor(C.primary);
   const labelText = label.toUpperCase();
-  doc.text(labelText, MAIN_X, mainY, { characterSpacing: 1.3, width: MAIN_W });
-  mainY += doc.heightOfString(labelText, { width: MAIN_W, characterSpacing: 1.3 }) + 2;
-  doc.moveTo(MAIN_X, mainY).lineTo(MAIN_X + 60, mainY).lineWidth(1).strokeColor(C.accent).stroke();
-  mainY += 5;
+  doc.text(labelText, MAIN_X, mainY, { characterSpacing: 1.4, width: MAIN_W });
+  mainY += doc.heightOfString(labelText, { width: MAIN_W, characterSpacing: 1.4 }) + 3;
+  doc.moveTo(MAIN_X, mainY).lineTo(MAIN_X + 80, mainY).lineWidth(1.2).strokeColor(C.accent).stroke();
+  mainY += 8;
 }
 
 function sanitize(s) {
@@ -105,15 +106,15 @@ function sanitize(s) {
 }
 
 function mainBullet(text) {
-  doc.font('Helvetica').fontSize(8.8).fillColor(C.text);
-  const indent = 9;
+  doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
+  const indent = 10;
   const width = MAIN_W - indent;
   const t = sanitize(text);
   const h = doc.heightOfString(t, { width });
-  ensureMainSpace(h + 1.5);
+  ensureMainSpace(h + 3);
   doc.fillColor(C.accent).text('-', MAIN_X, mainY, { width: 8 });
   doc.fillColor(C.text).text(t, MAIN_X + indent, mainY, { width });
-  mainY += h + 1.5;
+  mainY += h + 3;
 }
 
 // ---- sidebar cursor ----
@@ -225,43 +226,57 @@ mainY = MAIN_TOP;
 
 // Summary
 mainHeading('Professional Summary');
-mainText(profile.summary, { size: 9.3, color: C.text, gap: 3 });
+mainText(profile.summary, { size: 10, color: C.text, gap: 6 });
 
 // Tech expertise
 mainHeading('Technical Expertise');
 Object.entries(techExpertise).forEach(([k, v]) => {
   const combined = `${k}: ${v}`;
-  doc.font('Helvetica').fontSize(8.8).fillColor(C.text);
+  doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
   const h = doc.heightOfString(combined, { width: MAIN_W });
-  ensureMainSpace(h + 1.5);
+  ensureMainSpace(h + 4);
   doc.font('Helvetica-Bold').fillColor(C.primary).text(`${k}: `, MAIN_X, mainY, { width: MAIN_W, continued: true });
   doc.font('Helvetica').fillColor(C.text).text(v);
-  mainY += h + 1.5;
+  mainY += h + 4;
 });
 
-// Selected projects (compact — tagline + stack only)
+// AI capabilities
+mainHeading('AI Capabilities');
+capabilities.forEach((cap) => {
+  const line = `${cap.title} — ${cap.description}`;
+  doc.font('Helvetica').fontSize(9.5).fillColor(C.text);
+  const h = doc.heightOfString(line, { width: MAIN_W });
+  ensureMainSpace(h + 3);
+  doc.font('Helvetica-Bold').fillColor(C.text).text(`${cap.title} `, MAIN_X, mainY, { width: MAIN_W, continued: true });
+  doc.font('Helvetica').fillColor(C.muted).text(`— ${cap.description}`);
+  mainY += h + 3;
+});
+
+// Selected projects
 mainHeading('Selected Projects');
 projects.forEach((p) => {
-  ensureMainSpace(28);
-  doc.font('Helvetica-Bold').fontSize(9.8).fillColor(C.primary);
+  ensureMainSpace(40);
+  doc.font('Helvetica-Bold').fontSize(10.5).fillColor(C.primary);
   doc.text(p.title, MAIN_X, mainY, { width: MAIN_W, continued: true });
-  doc.font('Helvetica').fontSize(8.3).fillColor(C.muted).text(`  ·  ${p.status}`);
-  mainY += doc.heightOfString(p.title, { width: MAIN_W }) + 0.5;
-  mainText(sanitize(p.tagline), { font: 'Helvetica-Oblique', size: 8.8, color: C.muted, gap: 1 });
-  mainText(`Stack: ${p.stack.join(', ')}`, { size: 8.3, color: C.muted, gap: 3 });
+  doc.font('Helvetica').fontSize(9).fillColor(C.muted).text(`  ·  ${p.status}`);
+  mainY += doc.heightOfString(p.title, { width: MAIN_W }) + 2;
+  mainText(sanitize(p.tagline), { font: 'Helvetica-Oblique', size: 9, color: C.muted, gap: 3 });
+  mainText(sanitize(p.solution), { size: 9.5, color: C.text, gap: 2 });
+  mainText(`Stack: ${p.stack.join(', ')}`, { size: 8.5, color: C.muted, gap: 8 });
 });
 
 // Experience
 mainHeading('Professional Experience');
 experience.forEach((j) => {
-  ensureMainSpace(32);
-  doc.font('Helvetica-Bold').fontSize(9.8).fillColor(C.primary);
+  ensureMainSpace(40);
+  doc.font('Helvetica-Bold').fontSize(11).fillColor(C.primary);
   doc.text(j.role, MAIN_X, mainY, { width: MAIN_W, continued: true });
-  doc.font('Helvetica').fontSize(8.3).fillColor(C.muted).text(`  ·  ${j.period}`);
-  mainY += doc.heightOfString(j.role, { width: MAIN_W }) + 0.5;
-  mainText(j.company, { font: 'Helvetica-Oblique', size: 8.8, color: C.muted, gap: 1 });
+  doc.font('Helvetica').fontSize(9).fillColor(C.muted).text(`  ·  ${j.period}`);
+  mainY += doc.heightOfString(j.role, { width: MAIN_W }) + 2;
+  mainText(j.company, { font: 'Helvetica-Oblique', size: 9.5, color: C.muted, gap: 3 });
+  if (j.description) mainText(j.description, { size: 9, color: C.muted, gap: 3 });
   (j.highlights || []).forEach((h) => mainBullet(h));
-  if (j.tech && j.tech.length) mainText(`Tech: ${j.tech.join(', ')}`, { size: 8.3, color: C.muted, gap: 3.5 });
+  if (j.tech && j.tech.length) mainText(`Tech: ${j.tech.join(', ')}`, { size: 8.5, color: C.muted, gap: 8 });
 });
 
 // Page numbers
