@@ -12,10 +12,15 @@ export function Card({ children, className, tilt = false, ...props }) {
   const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-6, 6]), { stiffness: 200, damping: 20 });
 
   const handleMove = (e) => {
-    if (!tiltActive || !ref.current) return;
+    if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+    ref.current.style.setProperty('--mx', `${px}px`);
+    ref.current.style.setProperty('--my', `${py}px`);
+    if (!tiltActive) return;
+    x.set(px / rect.width - 0.5);
+    y.set(py / rect.height - 0.5);
   };
 
   const handleLeave = () => {
@@ -32,7 +37,7 @@ export function Card({ children, className, tilt = false, ...props }) {
       whileHover={reduce ? undefined : { y: -4 }}
       transition={{ type: 'spring', stiffness: 250, damping: 20 }}
       className={cn(
-        'glass rounded-2xl p-6 transition-shadow hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(167,139,250,0.15)]',
+        'spotlight glass rounded-2xl p-6 transition-shadow hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_12px_40px_rgba(167,139,250,0.15)]',
         className
       )}
       {...props}

@@ -64,8 +64,69 @@
     50% { background-position: 100% 50%; }
   }
 
+  /* Dotted grid background for hero */
+  .grid-dots {
+    background-image: radial-gradient(circle at 1px 1px, var(--color-text-muted) 1px, transparent 0);
+    background-size: 28px 28px;
+    opacity: 0.12;
+  }
+
+  /* Marquee scroll */
+  .marquee-track {
+    animation: marquee 35s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* Heading underline draw */
+  .heading-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .heading-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-magenta));
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .heading-underline.in-view::after {
+    transform: scaleX(1);
+  }
+
+  /* Spotlight hover for cards */
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  .spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 50%), var(--color-primary), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+  }
+  .spotlight:hover::before {
+    opacity: 0.5;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .gradient-text { animation: none; }
+    .gradient-text,
+    .marquee-track { animation: none; }
+    .heading-underline::after { transform: scaleX(1); transition: none; }
     html { scroll-behavior: auto; }
   }
 }

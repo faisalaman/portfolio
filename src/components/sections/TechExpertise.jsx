@@ -3,13 +3,14 @@ import { Section } from '../ui/Section';
 import { Card } from '../ui/Card';
 import { rotateIn, stagger, viewportOnce } from '../../lib/motion';
 import { techExpertise } from '../../data/profile';
+import { AnimatedHeading } from '../ui/AnimatedHeading';
 
 export function TechExpertise() {
   const entries = Object.entries(techExpertise);
   return (
     <Section id="tech">
       <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Tech expertise</h2>
+        <AnimatedHeading className="text-3xl font-bold tracking-tight md:text-4xl">Tech expertise</AnimatedHeading>
         <p className="mx-auto mt-4 max-w-2xl text-text-muted">Tools, frameworks, and platforms I work with.</p>
       </div>
       <Motion.div

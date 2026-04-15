@@ -3,13 +3,14 @@ import { Section } from '../ui/Section';
 import { Card } from '../ui/Card';
 import { slideInLeft, stagger, viewportOnce } from '../../lib/motion';
 import { experience } from '../../data/profile';
+import { AnimatedHeading } from '../ui/AnimatedHeading';
 
 export function Experience() {
   const reduce = useReducedMotion();
   return (
     <Section id="experience">
       <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Experience</h2>
+        <AnimatedHeading className="text-3xl font-bold tracking-tight md:text-4xl">Experience</AnimatedHeading>
         <p className="mx-auto mt-4 max-w-2xl text-text-muted">12+ years across enterprise and government engagements.</p>
       </div>
       <div className="relative">

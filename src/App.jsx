@@ -1,4 +1,5 @@
 import { AuroraBackground } from './components/ui/AuroraBackground';
+import { ScrollProgress } from './components/ui/ScrollProgress';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { Hero } from './components/sections/Hero';
@@ -16,6 +17,7 @@ export default function App() {
   return (
     <>
       <PageLoader />
+      <ScrollProgress />
       <AuroraBackground />
       <Navbar />
       <main>

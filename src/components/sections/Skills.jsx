@@ -2,13 +2,14 @@ import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Section } from '../ui/Section';
 import { fadeUp, stagger, viewportOnce } from '../../lib/motion';
 import { skills } from '../../data/profile';
+import { AnimatedHeading } from '../ui/AnimatedHeading';
 
 export function Skills() {
   const reduce = useReducedMotion();
   return (
     <Section id="skills">
       <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Skills</h2>
+        <AnimatedHeading className="text-3xl font-bold tracking-tight md:text-4xl">Skills</AnimatedHeading>
         <p className="mx-auto mt-4 max-w-2xl text-text-muted">Core competencies and proficiency levels.</p>
       </div>
       <Motion.ul

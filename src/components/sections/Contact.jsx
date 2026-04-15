@@ -3,6 +3,7 @@ import { Section } from '../ui/Section';
 import { Button } from '../ui/Button';
 import { popIn, viewportOnce } from '../../lib/motion';
 import { profile } from '../../data/profile';
+import { AnimatedHeading } from '../ui/AnimatedHeading';
 
 export function Contact() {
   const reduce = useReducedMotion();
@@ -22,7 +23,7 @@ export function Contact() {
           className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(circle_at_center,var(--color-primary)_0%,transparent_60%)] opacity-20 blur-2xl"
         />
         <div className="relative z-10">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Let's build something</h2>
+          <AnimatedHeading className="text-3xl font-bold tracking-tight md:text-4xl">Let's build something</AnimatedHeading>
           <p className="mx-auto mt-4 max-w-xl text-text-muted">
             Open to consulting, contract, and full-time roles. Drop a line — I'll get back within a day.
           </p>

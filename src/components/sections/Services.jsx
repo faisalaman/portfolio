@@ -3,6 +3,7 @@ import { Section } from '../ui/Section';
 import { Card } from '../ui/Card';
 import { popIn, stagger, viewportOnce } from '../../lib/motion';
 import { services } from '../../data/profile';
+import { AnimatedHeading } from '../ui/AnimatedHeading';
 
 const ICONS = {
   backend: 'M4 6h16M4 12h16M4 18h7',
@@ -17,7 +18,7 @@ export function Services() {
   return (
     <Section id="services">
       <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">What I do</h2>
+        <AnimatedHeading className="text-3xl font-bold tracking-tight md:text-4xl">What I do</AnimatedHeading>
         <p className="mx-auto mt-4 max-w-2xl text-text-muted">Full-stack engineering services across the .NET ecosystem.</p>
       </div>
       <Motion.div

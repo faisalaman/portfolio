@@ -1,8 +1,16 @@
 import { motion as Motion, useReducedMotion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { GradientText } from '../ui/GradientText';
+import { TypingTitle } from '../ui/TypingTitle';
+import { Marquee } from '../ui/Marquee';
 import { fadeUp, stagger } from '../../lib/motion';
-import { profile } from '../../data/profile';
+import { profile, techExpertise } from '../../data/profile';
+
+const marqueeItems = Object.values(techExpertise)
+  .flatMap((s) => s.split(/[,/]/))
+  .map((s) => s.trim())
+  .filter(Boolean)
+  .slice(0, 18);
 
 const chips = [
   { label: '.NET', x: '6%',  y: '18%', delay: 0 },
@@ -42,7 +50,10 @@ function FloatingChip({ chip, reduce }) {
 export function Hero() {
   const reduce = useReducedMotion();
   return (
-    <section id="top" className="relative min-h-[92vh] flex items-center pt-28 pb-20 overflow-hidden">
+    <section id="top" className="relative min-h-[92vh] flex flex-col justify-center pt-28 pb-12 overflow-hidden">
+      {/* Dotted grid backdrop */}
+      <div aria-hidden className="grid-dots pointer-events-none absolute inset-0 -z-10" />
+
       {/* Soft glow behind the headline */}
       <Motion.div
         aria-hidden
@@ -71,7 +82,7 @@ export function Hero() {
           className="max-w-3xl"
         >
           <Motion.p variants={fadeUp} className="mb-4 text-sm font-medium tracking-widest text-primary uppercase">
-            {profile.title}
+            <TypingTitle words={profile.typingRoles} />
           </Motion.p>
           <Motion.h1
             variants={fadeUp}
@@ -90,6 +101,11 @@ export function Hero() {
             <Button as="a" href="#experience" variant="ghost">View experience</Button>
           </Motion.div>
         </Motion.div>
+      </div>
+
+      {/* Marquee strip of tech stack */}
+      <div className="relative z-10 mt-16">
+        <Marquee items={marqueeItems} />
       </div>
     </section>
   );

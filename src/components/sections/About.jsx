@@ -4,6 +4,7 @@ import { Section } from '../ui/Section';
 import { useCounter } from '../../hooks/useCounter';
 import { slideInLeft, slideInRight, viewportOnce } from '../../lib/motion';
 import { profile, stats } from '../../data/profile';
+import { AnimatedHeading } from '../ui/AnimatedHeading';
 
 function Stat({ stat, start }) {
   const value = useCounter(stat.number, { start });
@@ -31,7 +32,7 @@ export function About() {
           whileInView={reduce ? undefined : 'visible'}
           viewport={viewportOnce}
         >
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">About me</h2>
+          <AnimatedHeading className="text-3xl font-bold tracking-tight md:text-4xl">About me</AnimatedHeading>
           <p className="mt-6 text-base leading-relaxed text-text-muted md:text-lg">{profile.summary}</p>
           <dl className="mt-8 grid grid-cols-2 gap-4 text-sm">
             <div><dt className="text-text-muted">Location</dt><dd className="font-medium">{profile.location}</dd></div>
