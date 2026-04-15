@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://faisalaman.vercel.app/sitemap.xml
+Sitemap: https://profile-faisal.vercel.app/sitemap.xml
