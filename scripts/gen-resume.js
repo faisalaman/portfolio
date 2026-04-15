@@ -165,15 +165,6 @@ function sideSkillBar(name, level) {
 // ================== SIDEBAR CONTENT ==================
 sideY = 38;
 
-// Photo placeholder
-const photoSize = 70;
-const photoX = SIDEBAR_PAD_X + (SIDEBAR_INNER_W - photoSize) / 2;
-doc.save();
-doc.circle(photoX + photoSize / 2, sideY + photoSize / 2, photoSize / 2).lineWidth(1.5).strokeColor(C.accent).stroke();
-doc.font('Helvetica').fontSize(8).fillColor(C.sidebarMuted).text('PHOTO', photoX, sideY + photoSize / 2 - 4, { width: photoSize, align: 'center' });
-doc.restore();
-sideY += photoSize + 14;
-
 // Name
 const [firstName, ...rest] = profile.name.split(' ');
 doc.font('Helvetica-Bold').fontSize(22).fillColor(C.sidebarText);
